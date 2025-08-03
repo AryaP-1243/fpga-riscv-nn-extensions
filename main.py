@@ -500,7 +500,6 @@ relu.v x12, x13          # Custom ReLU instruction
                         st.subheader("Training Progress")
                         training_data = rl_results['training_history']
                         if training_data:
-                            import pandas as pd
                             df = pd.DataFrame(training_data)
                             
                             fig_training = px.line(df, x='episode', y='reward', 
