@@ -1,0 +1,1236 @@
+{
+  "profiling": {
+    "total_time": 0.03476853180036414,
+    "layers": [
+      {
+        "name": "features.3.conv.1.0",
+        "type": "Conv2d",
+        "avg_time": 0.0040642560000000005,
+        "percentage": 9.9203872675241,
+        "parameters": 1296,
+        "flops_estimate": 65028096
+      },
+      {
+        "name": "features.0.0",
+        "type": "Conv2d",
+        "avg_time": 0.003612672,
+        "percentage": 8.818122015576977,
+        "parameters": 864,
+        "flops_estimate": 43352064
+      },
+      {
+        "name": "features.1.conv.0.0",
+        "type": "Conv2d",
+        "avg_time": 0.003612672,
+        "percentage": 8.818122015576977,
+        "parameters": 288,
+        "flops_estimate": 14450688
+      },
+      {
+        "name": "features.2.conv.1.0",
+        "type": "Conv2d",
+        "avg_time": 0.0027095040000000006,
+        "percentage": 6.613591511682734,
+        "parameters": 864,
+        "flops_estimate": 43352064
+      },
+      {
+        "name": "features.5.conv.1.0",
+        "type": "Conv2d",
+        "avg_time": 0.0013547520000000003,
+        "percentage": 3.306795755841367,
+        "parameters": 1728,
+        "flops_estimate": 86704128
+      },
+      {
+        "name": "features.6.conv.1.0",
+        "type": "Conv2d",
+        "avg_time": 0.0013547520000000003,
+        "percentage": 3.306795755841367,
+        "parameters": 1728,
+        "flops_estimate": 86704128
+      },
+      {
+        "name": "classifier.1",
+        "type": "Linear",
+        "avg_time": 0.00128,
+        "percentage": 3.124334614362591,
+        "parameters": 1281000,
+        "flops_estimate": 1281000
+      },
+      {
+        "name": "features.2.conv.0.0",
+        "type": "Conv2d",
+        "avg_time": 0.001204224,
+        "percentage": 2.939374005192326,
+        "parameters": 1536,
+        "flops_estimate": 77070336
+      },
+      {
+        "name": "features.4.conv.1.0",
+        "type": "Conv2d",
+        "avg_time": 0.0010160640000000001,
+        "percentage": 2.480096816881025,
+        "parameters": 1296,
+        "flops_estimate": 65028096
+      },
+      {
+        "name": "features.12.conv.1.0",
+        "type": "Conv2d",
+        "avg_time": 0.0010160640000000001,
+        "percentage": 2.480096816881025,
+        "parameters": 5184,
+        "flops_estimate": 260112384
+      },
+      {
+        "name": "features.13.conv.1.0",
+        "type": "Conv2d",
+        "avg_time": 0.0010160640000000001,
+        "percentage": 2.480096816881025,
+        "parameters": 5184,
+        "flops_estimate": 260112384
+      },
+      {
+        "name": "classifier.0",
+        "type": "Dropout",
+        "avg_time": 0.0010000000000000002,
+        "percentage": 2.4408864174707747,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.8.conv.1.0",
+        "type": "Conv2d",
+        "avg_time": 0.0006773760000000001,
+        "percentage": 1.6533978779206835,
+        "parameters": 3456,
+        "flops_estimate": 173408256
+      },
+      {
+        "name": "features.9.conv.1.0",
+        "type": "Conv2d",
+        "avg_time": 0.0006773760000000001,
+        "percentage": 1.6533978779206835,
+        "parameters": 3456,
+        "flops_estimate": 173408256
+      },
+      {
+        "name": "features.10.conv.1.0",
+        "type": "Conv2d",
+        "avg_time": 0.0006773760000000001,
+        "percentage": 1.6533978779206835,
+        "parameters": 3456,
+        "flops_estimate": 173408256
+      },
+      {
+        "name": "features.11.conv.1.0",
+        "type": "Conv2d",
+        "avg_time": 0.0006773760000000001,
+        "percentage": 1.6533978779206835,
+        "parameters": 3456,
+        "flops_estimate": 173408256
+      },
+      {
+        "name": "features.3.conv.0.0",
+        "type": "Conv2d",
+        "avg_time": 0.000451584,
+        "percentage": 1.102265251947122,
+        "parameters": 3456,
+        "flops_estimate": 173408256
+      },
+      {
+        "name": "features.4.conv.0.0",
+        "type": "Conv2d",
+        "avg_time": 0.000451584,
+        "percentage": 1.102265251947122,
+        "parameters": 3456,
+        "flops_estimate": 173408256
+      },
+      {
+        "name": "features.15.conv.1.0",
+        "type": "Conv2d",
+        "avg_time": 0.00042336000000000007,
+        "percentage": 1.033373673700427,
+        "parameters": 8640,
+        "flops_estimate": 433520640
+      },
+      {
+        "name": "features.16.conv.1.0",
+        "type": "Conv2d",
+        "avg_time": 0.00042336000000000007,
+        "percentage": 1.033373673700427,
+        "parameters": 8640,
+        "flops_estimate": 433520640
+      },
+      {
+        "name": "features.17.conv.1.0",
+        "type": "Conv2d",
+        "avg_time": 0.00042336000000000007,
+        "percentage": 1.033373673700427,
+        "parameters": 8640,
+        "flops_estimate": 433520640
+      },
+      {
+        "name": "features.7.conv.1.0",
+        "type": "Conv2d",
+        "avg_time": 0.0003386880000000001,
+        "percentage": 0.8266989389603417,
+        "parameters": 1728,
+        "flops_estimate": 86704128
+      },
+      {
+        "name": "features.14.conv.1.0",
+        "type": "Conv2d",
+        "avg_time": 0.00025401600000000003,
+        "percentage": 0.6200242042202563,
+        "parameters": 5184,
+        "flops_estimate": 260112384
+      },
+      {
+        "name": "features.2.conv.0.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.00024084480000000002,
+        "percentage": 0.5878748010384652,
+        "parameters": 192,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.1.conv.1",
+        "type": "Conv2d",
+        "avg_time": 0.00020070399999999998,
+        "percentage": 0.4898956675320542,
+        "parameters": 512,
+        "flops_estimate": 25690112
+      },
+      {
+        "name": "features.5.conv.0.0",
+        "type": "Conv2d",
+        "avg_time": 0.000150528,
+        "percentage": 0.36742175064904076,
+        "parameters": 6144,
+        "flops_estimate": 308281344
+      },
+      {
+        "name": "features.6.conv.0.0",
+        "type": "Conv2d",
+        "avg_time": 0.000150528,
+        "percentage": 0.36742175064904076,
+        "parameters": 6144,
+        "flops_estimate": 308281344
+      },
+      {
+        "name": "features.7.conv.0.0",
+        "type": "Conv2d",
+        "avg_time": 0.000150528,
+        "percentage": 0.36742175064904076,
+        "parameters": 6144,
+        "flops_estimate": 308281344
+      },
+      {
+        "name": "features.2.conv.0.2",
+        "type": "ReLU6",
+        "avg_time": 0.00012042240000000001,
+        "percentage": 0.2939374005192326,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.12.conv.0.0",
+        "type": "Conv2d",
+        "avg_time": 0.000112896,
+        "percentage": 0.2755663129867805,
+        "parameters": 55296,
+        "flops_estimate": 2774532096
+      },
+      {
+        "name": "features.13.conv.0.0",
+        "type": "Conv2d",
+        "avg_time": 0.000112896,
+        "percentage": 0.2755663129867805,
+        "parameters": 55296,
+        "flops_estimate": 2774532096
+      },
+      {
+        "name": "features.14.conv.0.0",
+        "type": "Conv2d",
+        "avg_time": 0.000112896,
+        "percentage": 0.2755663129867805,
+        "parameters": 55296,
+        "flops_estimate": 2774532096
+      },
+      {
+        "name": "features.0.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 64,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.0.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.1.conv.0.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 64,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.1.conv.0.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.1.conv.2",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 32,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.2.conv.1.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 192,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.2.conv.1.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.2.conv.2",
+        "type": "Conv2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 2304,
+        "flops_estimate": 115605504
+      },
+      {
+        "name": "features.2.conv.3",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 48,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.3.conv.0.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 288,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.3.conv.0.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.3.conv.1.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 288,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.3.conv.1.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.3.conv.2",
+        "type": "Conv2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 3456,
+        "flops_estimate": 173408256
+      },
+      {
+        "name": "features.3.conv.3",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 48,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.4.conv.0.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 288,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.4.conv.0.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.4.conv.1.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 288,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.4.conv.1.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.4.conv.2",
+        "type": "Conv2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 4608,
+        "flops_estimate": 231211008
+      },
+      {
+        "name": "features.4.conv.3",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 64,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.5.conv.0.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 384,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.5.conv.0.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.5.conv.1.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 384,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.5.conv.1.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.5.conv.2",
+        "type": "Conv2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 6144,
+        "flops_estimate": 308281344
+      },
+      {
+        "name": "features.5.conv.3",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 64,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.6.conv.0.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 384,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.6.conv.0.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.6.conv.1.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 384,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.6.conv.1.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.6.conv.2",
+        "type": "Conv2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 6144,
+        "flops_estimate": 308281344
+      },
+      {
+        "name": "features.6.conv.3",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 64,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.7.conv.0.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 384,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.7.conv.0.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.7.conv.1.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 384,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.7.conv.1.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.7.conv.2",
+        "type": "Conv2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 12288,
+        "flops_estimate": 616562688
+      },
+      {
+        "name": "features.7.conv.3",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 128,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.8.conv.0.0",
+        "type": "Conv2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 24576,
+        "flops_estimate": 1233125376
+      },
+      {
+        "name": "features.8.conv.0.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 768,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.8.conv.0.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.8.conv.1.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 768,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.8.conv.1.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.8.conv.2",
+        "type": "Conv2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 24576,
+        "flops_estimate": 1233125376
+      },
+      {
+        "name": "features.8.conv.3",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 128,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.9.conv.0.0",
+        "type": "Conv2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 24576,
+        "flops_estimate": 1233125376
+      },
+      {
+        "name": "features.9.conv.0.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 768,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.9.conv.0.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.9.conv.1.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 768,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.9.conv.1.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.9.conv.2",
+        "type": "Conv2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 24576,
+        "flops_estimate": 1233125376
+      },
+      {
+        "name": "features.9.conv.3",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 128,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.10.conv.0.0",
+        "type": "Conv2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 24576,
+        "flops_estimate": 1233125376
+      },
+      {
+        "name": "features.10.conv.0.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 768,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.10.conv.0.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.10.conv.1.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 768,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.10.conv.1.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.10.conv.2",
+        "type": "Conv2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 24576,
+        "flops_estimate": 1233125376
+      },
+      {
+        "name": "features.10.conv.3",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 128,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.11.conv.0.0",
+        "type": "Conv2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 24576,
+        "flops_estimate": 1233125376
+      },
+      {
+        "name": "features.11.conv.0.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 768,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.11.conv.0.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.11.conv.1.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 768,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.11.conv.1.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.11.conv.2",
+        "type": "Conv2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 36864,
+        "flops_estimate": 1849688064
+      },
+      {
+        "name": "features.11.conv.3",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 192,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.12.conv.0.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 1152,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.12.conv.0.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.12.conv.1.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 1152,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.12.conv.1.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.12.conv.2",
+        "type": "Conv2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 55296,
+        "flops_estimate": 2774532096
+      },
+      {
+        "name": "features.12.conv.3",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 192,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.13.conv.0.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 1152,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.13.conv.0.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.13.conv.1.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 1152,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.13.conv.1.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.13.conv.2",
+        "type": "Conv2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 55296,
+        "flops_estimate": 2774532096
+      },
+      {
+        "name": "features.13.conv.3",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 192,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.14.conv.0.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 1152,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.14.conv.0.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.14.conv.1.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 1152,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.14.conv.1.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.14.conv.2",
+        "type": "Conv2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 92160,
+        "flops_estimate": 4624220160
+      },
+      {
+        "name": "features.14.conv.3",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 320,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.15.conv.0.0",
+        "type": "Conv2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 153600,
+        "flops_estimate": 7707033600
+      },
+      {
+        "name": "features.15.conv.0.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 1920,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.15.conv.0.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.15.conv.1.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 1920,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.15.conv.1.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.15.conv.2",
+        "type": "Conv2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 153600,
+        "flops_estimate": 7707033600
+      },
+      {
+        "name": "features.15.conv.3",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 320,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.16.conv.0.0",
+        "type": "Conv2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 153600,
+        "flops_estimate": 7707033600
+      },
+      {
+        "name": "features.16.conv.0.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 1920,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.16.conv.0.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.16.conv.1.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 1920,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.16.conv.1.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.16.conv.2",
+        "type": "Conv2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 153600,
+        "flops_estimate": 7707033600
+      },
+      {
+        "name": "features.16.conv.3",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 320,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.17.conv.0.0",
+        "type": "Conv2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 153600,
+        "flops_estimate": 7707033600
+      },
+      {
+        "name": "features.17.conv.0.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 1920,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.17.conv.0.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.17.conv.1.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 1920,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.17.conv.1.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.17.conv.2",
+        "type": "Conv2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 307200,
+        "flops_estimate": 15414067200
+      },
+      {
+        "name": "features.17.conv.3",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 640,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.18.0",
+        "type": "Conv2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 409600,
+        "flops_estimate": 20552089600
+      },
+      {
+        "name": "features.18.1",
+        "type": "BatchNorm2d",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 2560,
+        "flops_estimate": 0
+      },
+      {
+        "name": "features.18.2",
+        "type": "ReLU6",
+        "avg_time": 0.0001,
+        "percentage": 0.24408864174707742,
+        "parameters": 0,
+        "flops_estimate": 0
+      }
+    ],
+    "model_type": "pytorch",
+    "bottlenecks": []
+  },
+  "isa_extensions": [
+    {
+      "name": "VCONV.8",
+      "description": "Vectorized 2D Convolution - 8-bit integer convolution",
+      "category": "neural_compute",
+      "operands": [
+        "rs1",
+        "rs2",
+        "rd"
+      ],
+      "opcode": "0x7D",
+      "target_layer": "features.3.conv.1.0",
+      "target_operation": "Conv2d",
+      "estimated_speedup": 3.85,
+      "instruction_reduction": 65.0,
+      "assembly_example": "vconv.8 x10, x11, x13",
+      "rationale": "Layer 'features.3.conv.1.0' (Conv2d) consumes 9.9% of total execution time. The proposed VCONV.8 instruction can accelerate 8-bit integer convolution operations by combining multiple RISC-V instructions into a single specialized operation. With ~65,028,096 FLOPs, this layer would benefit significantly from hardware acceleration."
+    },
+    {
+      "name": "VCONV.16",
+      "description": "Vectorized 2D Convolution - 16-bit integer convolution",
+      "category": "neural_compute",
+      "operands": [
+        "rs1",
+        "rs2",
+        "rd"
+      ],
+      "opcode": "0x80",
+      "target_layer": "features.3.conv.1.0",
+      "target_operation": "Conv2d",
+      "estimated_speedup": 3.85,
+      "instruction_reduction": 65.0,
+      "assembly_example": "vconv.16 x10, x11, x13",
+      "rationale": "Layer 'features.3.conv.1.0' (Conv2d) consumes 9.9% of total execution time. The proposed VCONV.16 instruction can accelerate 16-bit integer convolution operations by combining multiple RISC-V instructions into a single specialized operation. With ~65,028,096 FLOPs, this layer would benefit significantly from hardware acceleration."
+    },
+    {
+      "name": "VCONV.F",
+      "description": "Vectorized 2D Convolution - floating-point convolution",
+      "category": "neural_compute",
+      "operands": [
+        "rs1",
+        "rs2",
+        "rd"
+      ],
+      "opcode": "0x87",
+      "target_layer": "features.3.conv.1.0",
+      "target_operation": "Conv2d",
+      "estimated_speedup": 3.85,
+      "instruction_reduction": 65.0,
+      "assembly_example": "vconv.f x10, x11, x13",
+      "rationale": "Layer 'features.3.conv.1.0' (Conv2d) consumes 9.9% of total execution time. The proposed VCONV.F instruction can accelerate floating-point convolution operations by combining multiple RISC-V instructions into a single specialized operation. With ~65,028,096 FLOPs, this layer would benefit significantly from hardware acceleration."
+    }
+  ],
+  "analysis": {
+    "overall_speedup": 1.0792570002617712,
+    "cycle_reduction": 7.343663301933426,
+    "total_instruction_reduction": 6.448251723890669,
+    "estimated_energy_savings": 19.999999999999993,
+    "code_size_change": 2.000000000000009,
+    "baseline_metrics": {
+      "execution_time": 0.03476853180036414,
+      "instruction_count": 10990246473,
+      "cycle_count": 13188295767.6,
+      "energy_consumption": 1099024647.3,
+      "code_size": 43960985892
+    },
+    "extended_metrics": {
+      "execution_time": 0.03221524788991975,
+      "instruction_count": 10281567715.344944,
+      "cycle_count": 12219791731.16432,
+      "energy_consumption": 879219717.84,
+      "code_size": 44840205609.840004,
+      "speedup_factor": 1.0792570002617712,
+      "instruction_reduction_percent": 6.448251723890665
+    },
+    "breakdown": {
+      "layer_improvements": [
+        {
+          "layer_name": "features.3.conv.1.0",
+          "layer_type": "Conv2d",
+          "original_time_percent": 9.9203872675241,
+          "estimated_speedup": 3.85,
+          "instruction_reduction": 65.0,
+          "isa_extension_used": "VCONV.8",
+          "impact_score": 38.19349097996779
+        }
+      ],
+      "instruction_category_impact": {
+        "neural_compute": {
+          "total_speedup": 11.55,
+          "total_reduction": 195.0,
+          "instruction_count": 3,
+          "avg_speedup": 3.85,
+          "avg_reduction": 65.0
+        }
+      },
+      "critical_path_analysis": {}
+    }
+  }
+}

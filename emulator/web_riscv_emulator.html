@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RISC-V ISA Extension Emulator</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .panel {
+            background-color: #2d2d2d;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .code-editor {
+            width: 100%;
+            height: 300px;
+            background-color: #1e1e1e;
+            border: 1px solid #555;
+            color: #ffffff;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            padding: 10px;
+            resize: vertical;
+        }
+        
+        .button {
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .button:hover {
+            background-color: #005a9e;
+        }
+        
+        .output {
+            background-color: #000;
+            border: 1px solid #555;
+            padding: 15px;
+            border-radius: 5px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .registers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .register {
+            background-color: #333;
+            padding: 8px;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 12px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background-color: #333;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .error {
+            color: #ff6b6b;
+        }
+        
+        .success {
+            color: #4CAF50;
+        }
+        
+        .warning {
+            color: #ffa500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 RISC-V ISA Extension Emulator</h1>
+            <p>Simulate custom neural network acceleration instructions</p>
+        </div>
+        
+        <div class="panel">
+            <h3>📝 Assembly Code Editor</h3>
+            <textarea id="assemblyCode" class="code-editor" placeholder="Enter RISC-V assembly code with custom extensions...">
+# Example: Custom neural network instructions
+# Load test data
+li x10, 0x1000      # Base address for input data
+li x11, 0x2000      # Base address for weights
+li x12, 0x3000      # Base address for output
+
+# Custom ISA Extensions (simulated)
+vconv.8 x10, x11, x12    # 8-bit vectorized convolution
+relu.v x12, x13          # Vectorized ReLU activation
+vmmul.16 x13, x14, x15   # 16-bit vector-matrix multiply
+
+# Standard RISC-V comparison
+# This would normally require ~50+ instructions
+add x16, x10, x11
+mul x17, x16, x12
+# ... many more instructions ...
+
+# Performance metrics will be calculated
+nop
+            </textarea>
+            <div style="margin-top: 10px;">
+                <button class="button" onclick="executeCode()">▶️ Execute</button>
+                <button class="button" onclick="stepExecution()">⏭️ Step</button>
+                <button class="button" onclick="resetEmulator()">🔄 Reset</button>
+                <button class="button" onclick="loadExample()">📋 Load Example</button>
+            </div>
+        </div>
+        
+        <div class="comparison">
+            <div class="panel">
+                <h3>🏃‍♂️ Extended ISA Execution</h3>
+                <div id="extendedOutput" class="output">Ready to execute extended ISA code...</div>
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="extendedCycles">0</div>
+                        <div>Cycles</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="extendedInstructions">0</div>
+                        <div>Instructions</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h3>🐌 Standard RISC-V Execution</h3>
+                <div id="standardOutput" class="output">Standard RISC-V equivalent will be shown here...</div>
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="standardCycles">0</div>
+                        <div>Cycles</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="standardInstructions">0</div>
+                        <div>Instructions</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h3>📊 Performance Comparison</h3>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="speedup">1.0x</div>
+                    <div>Speedup</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="instructionReduction">0%</div>
+                    <div>Instruction Reduction</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="energySavings">0%</div>
+                    <div>Energy Savings</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h3>🔧 Register State</h3>
+            <div id="registers" class="registers">
+                <!-- Registers will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // RISC-V Emulator JavaScript Implementation
+        class RISCVEmulator {
+            constructor() {
+                this.registers = new Array(32).fill(0);
+                this.memory = new Map();
+                this.pc = 0;
+                this.cycles = 0;
+                this.instructionCount = 0;
+                this.customInstructions = this.loadCustomInstructions();
+            }
+            
+            loadCustomInstructions() {
+                return {
+                    'vconv.8': { cycles: 1, equivalent_instructions: 25 },
+                    'vconv.16': { cycles: 1, equivalent_instructions: 30 },
+                    'vconv.f': { cycles: 2, equivalent_instructions: 35 },
+                    'vmmul.8': { cycles: 1, equivalent_instructions: 20 },
+                    'vmmul.16': { cycles: 1, equivalent_instructions: 25 },
+                    'vmmul.f': { cycles: 2, equivalent_instructions: 30 },
+                    'relu.v': { cycles: 1, equivalent_instructions: 8 },
+                    'relu.6': { cycles: 1, equivalent_instructions: 10 },
+                    'relu.l': { cycles: 1, equivalent_instructions: 12 },
+                    'bnorm.2d': { cycles: 2, equivalent_instructions: 15 },
+                    'bnorm.1d': { cycles: 1, equivalent_instructions: 12 },
+                    'vpool.max': { cycles: 1, equivalent_instructions: 6 },
+                    'vpool.avg': { cycles: 1, equivalent_instructions: 8 },
+                    'vpool.gap': { cycles: 1, equivalent_instructions: 10 }
+                };
+            }
+            
+            reset() {
+                this.registers.fill(0);
+                this.memory.clear();
+                this.pc = 0;
+                this.cycles = 0;
+                this.instructionCount = 0;
+            }
+            
+            parseInstruction(line) {
+                line = line.trim();
+                if (!line || line.startsWith('#')) return null;
+                
+                const parts = line.split(/\s+/);
+                const opcode = parts[0].toLowerCase();
+                const operands = parts.slice(1).join('').split(',').map(op => op.trim());
+                
+                return { opcode, operands, original: line };
+            }
+            
+            executeInstruction(instruction) {
+                const { opcode, operands } = instruction;
+                let cycles = 1;
+                
+                // Check if it's a custom instruction
+                if (this.customInstructions[opcode]) {
+                    cycles = this.customInstructions[opcode].cycles;
+                    this.executeCustomInstruction(opcode, operands);
+                } else {
+                    // Standard RISC-V instructions
+                    this.executeStandardInstruction(opcode, operands);
+                }
+                
+                this.cycles += cycles;
+                this.instructionCount++;
+                this.pc++;
+                
+                return cycles;
+            }
+            
+            executeCustomInstruction(opcode, operands) {
+                // Simulate custom instruction execution
+                switch(opcode) {
+                    case 'vconv.8':
+                    case 'vconv.16':
+                    case 'vconv.f':
+                        this.simulateConvolution(operands);
+                        break;
+                    case 'vmmul.8':
+                    case 'vmmul.16':
+                    case 'vmmul.f':
+                        this.simulateMatrixMultiply(operands);
+                        break;
+                    case 'relu.v':
+                    case 'relu.6':
+                    case 'relu.l':
+                        this.simulateReLU(operands);
+                        break;
+                    default:
+                        // Generic custom instruction
+                        if (operands.length > 0) {
+                            const destReg = this.parseRegister(operands[operands.length - 1]);
+                            this.registers[destReg] = Math.floor(Math.random() * 1000);
+                        }
+                }
+            }
+            
+            executeStandardInstruction(opcode, operands) {
+                switch(opcode) {
+                    case 'li':
+                        if (operands.length >= 2) {
+                            const reg = this.parseRegister(operands[0]);
+                            const immediate = parseInt(operands[1]);
+                            this.registers[reg] = immediate;
+                        }
+                        break;
+                    case 'add':
+                        if (operands.length >= 3) {
+                            const rd = this.parseRegister(operands[0]);
+                            const rs1 = this.parseRegister(operands[1]);
+                            const rs2 = this.parseRegister(operands[2]);
+                            this.registers[rd] = this.registers[rs1] + this.registers[rs2];
+                        }
+                        break;
+                    case 'mul':
+                        if (operands.length >= 3) {
+                            const rd = this.parseRegister(operands[0]);
+                            const rs1 = this.parseRegister(operands[1]);
+                            const rs2 = this.parseRegister(operands[2]);
+                            this.registers[rd] = this.registers[rs1] * this.registers[rs2];
+                        }
+                        break;
+                    case 'nop':
+                        // No operation
+                        break;
+                    default:
+                        // Unknown instruction, treat as NOP
+                        break;
+                }
+            }
+            
+            simulateConvolution(operands) {
+                // Simulate convolution operation
+                if (operands.length >= 3) {
+                    const rd = this.parseRegister(operands[2]);
+                    this.registers[rd] = 0x4000; // Simulated result
+                }
+            }
+            
+            simulateMatrixMultiply(operands) {
+                // Simulate matrix multiplication
+                if (operands.length >= 3) {
+                    const rd = this.parseRegister(operands[2]);
+                    this.registers[rd] = 0x5000; // Simulated result
+                }
+            }
+            
+            simulateReLU(operands) {
+                // Simulate ReLU activation
+                if (operands.length >= 2) {
+                    const rs = this.parseRegister(operands[0]);
+                    const rd = this.parseRegister(operands[1]);
+                    this.registers[rd] = Math.max(0, this.registers[rs]);
+                }
+            }
+            
+            parseRegister(reg) {
+                if (reg.startsWith('x')) {
+                    return parseInt(reg.substring(1));
+                }
+                return 0;
+            }
+            
+            calculateStandardEquivalent(code) {
+                const lines = code.split('\n');
+                let totalInstructions = 0;
+                let totalCycles = 0;
+                
+                for (const line of lines) {
+                    const instruction = this.parseInstruction(line);
+                    if (!instruction) continue;
+                    
+                    const { opcode } = instruction;
+                    if (this.customInstructions[opcode]) {
+                        const equiv = this.customInstructions[opcode].equivalent_instructions;
+                        totalInstructions += equiv;
+                        totalCycles += equiv; // Assume 1 cycle per instruction for standard RISC-V
+                    } else {
+                        totalInstructions += 1;
+                        totalCycles += 1;
+                    }
+                }
+                
+                return { instructions: totalInstructions, cycles: totalCycles };
+            }
+        }
+        
+        // Global emulator instance
+        let emulator = new RISCVEmulator();
+        
+        function executeCode() {
+            const code = document.getElementById('assemblyCode').value;
+            const lines = code.split('\n');
+            
+            // Reset emulator
+            emulator.reset();
+            
+            let output = '';
+            let error = false;
+            
+            try {
+                output += '🔄 Starting execution...\n\n';
+                
+                for (const line of lines) {
+                    const instruction = emulator.parseInstruction(line);
+                    if (!instruction) continue;
+                    
+                    const cycles = emulator.executeInstruction(instruction);
+                    output += `PC=${emulator.pc.toString().padStart(3, '0')}: ${instruction.original.padEnd(20)} [${cycles} cycles]\n`;
+                }
+                
+                output += `\n✅ Execution completed successfully!\n`;
+                output += `Total cycles: ${emulator.cycles}\n`;
+                output += `Total instructions: ${emulator.instructionCount}\n`;
+                
+            } catch (e) {
+                output += `\n❌ Execution error: ${e.message}\n`;
+                error = true;
+            }
+            
+            // Update extended ISA output
+            document.getElementById('extendedOutput').textContent = output;
+            document.getElementById('extendedCycles').textContent = emulator.cycles;
+            document.getElementById('extendedInstructions').textContent = emulator.instructionCount;
+            
+            // Calculate standard RISC-V equivalent
+            const standard = emulator.calculateStandardEquivalent(code);
+            let standardOutput = '🔄 Calculating standard RISC-V equivalent...\n\n';
+            standardOutput += 'This code would require the following in standard RISC-V:\n';
+            standardOutput += `- ${standard.instructions} instructions\n`;
+            standardOutput += `- ${standard.cycles} cycles\n`;
+            standardOutput += '\nCustom instructions replaced with standard sequences:\n';
+            
+            for (const [custom, info] of Object.entries(emulator.customInstructions)) {
+                if (code.includes(custom)) {
+                    standardOutput += `- ${custom} → ${info.equivalent_instructions} standard instructions\n`;
+                }
+            }
+            
+            document.getElementById('standardOutput').textContent = standardOutput;
+            document.getElementById('standardCycles').textContent = standard.cycles;
+            document.getElementById('standardInstructions').textContent = standard.instructions;
+            
+            // Calculate performance metrics
+            const speedup = standard.cycles > 0 ? (standard.cycles / emulator.cycles) : 1;
+            const instructionReduction = standard.instructions > 0 ? 
+                ((standard.instructions - emulator.instructionCount) / standard.instructions * 100) : 0;
+            const energySavings = Math.min(instructionReduction * 0.8, 75); // Rough estimate
+            
+            document.getElementById('speedup').textContent = `${speedup.toFixed(2)}x`;
+            document.getElementById('instructionReduction').textContent = `${instructionReduction.toFixed(1)}%`;
+            document.getElementById('energySavings').textContent = `${energySavings.toFixed(1)}%`;
+            
+            // Update registers
+            updateRegisters();
+        }
+        
+        function stepExecution() {
+            // Simple step execution - execute one line at a time
+            alert('Step execution not fully implemented in this demo');
+        }
+        
+        function resetEmulator() {
+            emulator.reset();
+            document.getElementById('extendedOutput').textContent = 'Ready to execute extended ISA code...';
+            document.getElementById('standardOutput').textContent = 'Standard RISC-V equivalent will be shown here...';
+            document.getElementById('extendedCycles').textContent = '0';
+            document.getElementById('extendedInstructions').textContent = '0';
+            document.getElementById('standardCycles').textContent = '0';
+            document.getElementById('standardInstructions').textContent = '0';
+            document.getElementById('speedup').textContent = '1.0x';
+            document.getElementById('instructionReduction').textContent = '0%';
+            document.getElementById('energySavings').textContent = '0%';
+            updateRegisters();
+        }
+        
+        function loadExample() {
+            const example = `# Neural Network Acceleration Example
+# Load test data and weights
+li x10, 0x1000      # Input tensor base address
+li x11, 0x2000      # Weight matrix base address
+li x12, 0x3000      # Output buffer address
+
+# Custom ISA: 8-bit vectorized convolution
+vconv.8 x10, x11, x12
+
+# Custom ISA: Vectorized ReLU activation
+relu.v x12, x13
+
+# Custom ISA: 16-bit vector-matrix multiply for next layer
+li x14, 0x4000      # Next layer weights
+vmmul.16 x13, x14, x15
+
+# Batch normalization
+li x16, 0x5000      # BN parameters
+bnorm.2d x15, x16, x17
+
+# Global average pooling
+vpool.gap x17, x18
+
+# Final result in x18
+nop
+`;
+            document.getElementById('assemblyCode').value = example;
+        }
+        
+        function updateRegisters() {
+            const registersDiv = document.getElementById('registers');
+            registersDiv.innerHTML = '';
+            
+            for (let i = 0; i < 32; i++) {
+                const regDiv = document.createElement('div');
+                regDiv.className = 'register';
+                regDiv.innerHTML = `<strong>x${i}</strong><br>0x${emulator.registers[i].toString(16).padStart(8, '0')}`;
+                registersDiv.appendChild(regDiv);
+            }
+        }
+        
+        // Initialize registers display
+        updateRegisters();
+        
+        // Load example on page load
+        loadExample();
+    </script>
+</body>
+</html>

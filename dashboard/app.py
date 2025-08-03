@@ -1,0 +1,455 @@
+"""
+Streamlit Dashboard for AI-Guided RISC-V ISA Extension Tool
+Displays profiling results, ISA suggestions, and performance analysis
+"""
+
+import streamlit as st
+import plotly.express as px
+import plotly.graph_objects as go
+import pandas as pd
+import json
+import sys
+from pathlib import Path
+import subprocess
+import os
+
+# Add project root to path
+sys.path.append(str(Path(__file__).parent.parent))
+
+from profiler.torch_profiler import ModelProfiler
+from isa_engine.isa_generator import ISAGenerator
+from utils.analysis_tools import PerformanceAnalyzer
+
+# Configure Streamlit page
+st.set_page_config(
+    page_title="RISC-V ISA Extension Tool",
+    page_icon="🔧",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+def load_sample_data():
+    """Load sample profiling and ISA data for demonstration"""
+    # Sample profiling data
+    profile_data = {
+        'total_time': 0.245,
+        'model_type': 'mobilenet_v2',
+        'layers': [
+            {'name': 'conv1', 'type': 'Conv2d', 'avg_time': 0.089, 'percentage': 36.3, 'parameters': 864, 'flops_estimate': 430000},
+            {'name': 'conv2_1', 'type': 'Conv2d', 'avg_time': 0.054, 'percentage': 22.0, 'parameters': 18432, 'flops_estimate': 920000},
+            {'name': 'relu1', 'type': 'ReLU', 'avg_time': 0.032, 'percentage': 13.1, 'parameters': 0, 'flops_estimate': 150000},
+            {'name': 'conv2_2', 'type': 'Conv2d', 'avg_time': 0.028, 'percentage': 11.4, 'parameters': 9216, 'flops_estimate': 460000},
+            {'name': 'batchnorm1', 'type': 'BatchNorm2d', 'avg_time': 0.021, 'percentage': 8.6, 'parameters': 128, 'flops_estimate': 32000},
+            {'name': 'linear1', 'type': 'Linear', 'avg_time': 0.015, 'percentage': 6.1, 'parameters': 131072, 'flops_estimate': 131072},
+            {'name': 'relu2', 'type': 'ReLU', 'avg_time': 0.006, 'percentage': 2.4, 'parameters': 0, 'flops_estimate': 1000}
+        ],
+        'bottlenecks': []
+    }
+    
+    # Mark bottlenecks
+    profile_data['bottlenecks'] = [layer for layer in profile_data['layers'] if layer['percentage'] > 10]
+    
+    # Sample ISA extensions
+    isa_extensions = [
+        {
+            'name': 'VCONV.8',
+            'description': 'Vectorized 2D Convolution - 8-bit integer convolution',
+            'category': 'neural_compute',
+            'operands': ['rs1', 'rs2', 'rd'],
+            'opcode': '0x7B',
+            'target_layer': 'conv1',
+            'target_operation': 'Conv2d',
+            'estimated_speedup': 4.2,
+            'instruction_reduction': 71.5,
+            'assembly_example': 'vconv.8 x10, x11, x13',
+            'rationale': "Layer 'conv1' (Conv2d) consumes 36.3% of total execution time..."
+        },
+        {
+            'name': 'VCONV.8',
+            'description': 'Vectorized 2D Convolution - 8-bit integer convolution',
+            'category': 'neural_compute',
+            'operands': ['rs1', 'rs2', 'rd'],
+            'opcode': '0x7B',
+            'target_layer': 'conv2_1',
+            'target_operation': 'Conv2d',
+            'estimated_speedup': 3.8,
+            'instruction_reduction': 65.0,
+            'assembly_example': 'vconv.8 x10, x11, x13',
+            'rationale': "Layer 'conv2_1' (Conv2d) consumes 22.0% of total execution time..."
+        },
+        {
+            'name': 'RELU.V',
+            'description': 'ReLU Activation Function - vectorized ReLU',
+            'category': 'activation',
+            'operands': ['rs1', 'rd'],
+            'opcode': '0x7D',
+            'target_layer': 'relu1',
+            'target_operation': 'ReLU',
+            'estimated_speedup': 2.4,
+            'instruction_reduction': 48.0,
+            'assembly_example': 'relu.v x10, x13',
+            'rationale': "Layer 'relu1' (ReLU) consumes 13.1% of total execution time..."
+        }
+    ]
+    
+    return profile_data, isa_extensions
+
+def create_performance_charts(profile_data, isa_extensions):
+    """Create performance visualization charts"""
+    
+    # Layer execution time chart
+    layer_df = pd.DataFrame(profile_data['layers'][:10])  # Top 10 layers
+    
+    fig_layers = px.bar(
+        layer_df, 
+        x='name', 
+        y='percentage',
+        title='Layer Execution Time Distribution',
+        labels={'percentage': 'Execution Time (%)', 'name': 'Layer Name'},
+        color='type',
+        text='percentage'
+    )
+    fig_layers.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
+    fig_layers.update_layout(xaxis_tickangle=-45)
+    
+    # ISA extension impact chart
+    if isa_extensions:
+        isa_df = pd.DataFrame(isa_extensions)
+        
+        fig_speedup = px.bar(
+            isa_df,
+            x='name',
+            y='estimated_speedup',
+            title='Estimated Speedup by ISA Extension',
+            labels={'estimated_speedup': 'Speedup (x)', 'name': 'Instruction'},
+            color='category',
+            text='estimated_speedup'
+        )
+        fig_speedup.update_traces(texttemplate='%{text:.1f}x', textposition='outside')
+        
+        # Instruction reduction chart
+        fig_reduction = px.bar(
+            isa_df,
+            x='name',
+            y='instruction_reduction',
+            title='Instruction Count Reduction',
+            labels={'instruction_reduction': 'Reduction (%)', 'name': 'Instruction'},
+            color='category',
+            text='instruction_reduction'
+        )
+        fig_reduction.update_traces(texttemplate='%{text:.1f}%', textposition='outside')
+        
+        return fig_layers, fig_speedup, fig_reduction
+    
+    return fig_layers, None, None
+
+def main():
+    """Main Streamlit application"""
+    
+    # Header
+    st.title("🔧 AI-Guided RISC-V ISA Extension Tool")
+    st.markdown("Neural Network Profiling and Custom Instruction Generation")
+    
+    # Sidebar
+    st.sidebar.header("⚙️ Configuration")
+    
+    # Model selection
+    model_option = st.sidebar.selectbox(
+        "Select Model Type",
+        ["Sample MobileNet", "Sample ResNet", "Upload ONNX Model"]
+    )
+    
+    uploaded_file = None
+    if model_option == "Upload ONNX Model":
+        uploaded_file = st.sidebar.file_uploader(
+            "Choose ONNX model file", 
+            type=['onnx'],
+            help="Upload an ONNX model file (max 10MB)"
+        )
+    
+    # Analysis options
+    st.sidebar.header("🔍 Analysis Options")
+    time_threshold = st.sidebar.slider(
+        "Time Threshold for ISA Suggestions (%)",
+        min_value=1.0,
+        max_value=20.0,
+        value=5.0,
+        step=0.5,
+        help="Generate ISA extensions for layers consuming more than this percentage of total time"
+    )
+    
+    max_extensions = st.sidebar.slider(
+        "Maximum ISA Extensions",
+        min_value=1,
+        max_value=10,
+        value=5,
+        help="Maximum number of ISA extensions to generate"
+    )
+    
+    # Run analysis button
+    run_analysis = st.sidebar.button("🚀 Run Analysis", type="primary")
+    
+    # Main content
+    if run_analysis or 'profile_data' not in st.session_state:
+        with st.spinner("Running model profiling and ISA generation..."):
+            try:
+                if uploaded_file is not None:
+                    # Save uploaded file temporarily
+                    temp_path = f"temp_{uploaded_file.name}"
+                    with open(temp_path, "wb") as f:
+                        f.write(uploaded_file.getbuffer())
+                    
+                    # Profile uploaded model
+                    profiler = ModelProfiler()
+                    profile_data = profiler.profile_model_from_file(temp_path)
+                    
+                    # Clean up
+                    os.remove(temp_path)
+                else:
+                    # Use sample data for demo
+                    profile_data, isa_extensions = load_sample_data()
+                    
+                    # Generate ISA extensions if not using sample
+                    if model_option != "Sample MobileNet":
+                        profiler = ModelProfiler()
+                        if "ResNet" in model_option:
+                            profile_data = profiler.profile_sample_model("resnet")
+                        else:
+                            profile_data = profiler.profile_sample_model("mobilenet")
+                        
+                        generator = ISAGenerator()
+                        isa_extensions = generator.generate_extensions(profile_data)
+                
+                # Store in session state
+                st.session_state.profile_data = profile_data
+                st.session_state.isa_extensions = isa_extensions
+                
+                st.success("✅ Analysis completed successfully!")
+                
+            except Exception as e:
+                st.error(f"❌ Error during analysis: {str(e)}")
+                # Fall back to sample data
+                profile_data, isa_extensions = load_sample_data()
+                st.session_state.profile_data = profile_data
+                st.session_state.isa_extensions = isa_extensions
+    
+    # Use data from session state
+    profile_data = st.session_state.get('profile_data')
+    isa_extensions = st.session_state.get('isa_extensions')
+    
+    if not profile_data:
+        profile_data, isa_extensions = load_sample_data()
+    
+    # Create tabs
+    tab1, tab2, tab3, tab4 = st.tabs(["📊 Profiling Results", "🔧 ISA Extensions", "💻 Emulator", "📈 Performance Analysis"])
+    
+    with tab1:
+        st.header("Model Profiling Results")
+        
+        # Summary metrics
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("Total Execution Time", f"{profile_data['total_time']:.3f}s")
+        with col2:
+            st.metric("Number of Layers", len(profile_data['layers']))
+        with col3:
+            st.metric("Bottleneck Layers", len(profile_data['bottlenecks']))
+        with col4:
+            st.metric("Model Type", profile_data['model_type'].title())
+        
+        # Layer performance chart
+        fig_layers, fig_speedup, fig_reduction = create_performance_charts(profile_data, isa_extensions)
+        st.plotly_chart(fig_layers, use_container_width=True)
+        
+        # Detailed layer information
+        st.subheader("Layer Details")
+        layer_df = pd.DataFrame(profile_data['layers'])
+        layer_df['avg_time'] = layer_df['avg_time'].round(4)
+        layer_df['percentage'] = layer_df['percentage'].round(2)
+        
+        st.dataframe(
+            layer_df,
+            use_container_width=True,
+            column_config={
+                'avg_time': st.column_config.NumberColumn('Avg Time (s)', format="%.4f"),
+                'percentage': st.column_config.NumberColumn('Time %', format="%.2f%%"),
+                'parameters': st.column_config.NumberColumn('Parameters', format="%d"),
+                'flops_estimate': st.column_config.NumberColumn('FLOPs Est.', format="%d")
+            }
+        )
+    
+    with tab2:
+        st.header("Suggested ISA Extensions")
+        
+        if isa_extensions:
+            # Performance impact charts
+            col1, col2 = st.columns(2)
+            with col1:
+                if fig_speedup:
+                    st.plotly_chart(fig_speedup, use_container_width=True)
+            with col2:
+                if fig_reduction:
+                    st.plotly_chart(fig_reduction, use_container_width=True)
+            
+            # ISA extension details
+            for i, ext in enumerate(isa_extensions[:max_extensions]):
+                with st.expander(f"🔧 {ext['name']} - {ext['description']}", expanded=i==0):
+                    col1, col2 = st.columns([2, 1])
+                    
+                    with col1:
+                        st.write("**Target Operation:**", ext['target_operation'])
+                        st.write("**Target Layer:**", ext['target_layer'])
+                        st.write("**Category:**", ext['category'])
+                        st.write("**Operands:**", ", ".join(ext['operands']))
+                        st.write("**Rationale:**", ext['rationale'])
+                    
+                    with col2:
+                        st.metric("Estimated Speedup", f"{ext['estimated_speedup']:.1f}x")
+                        st.metric("Instruction Reduction", f"{ext['instruction_reduction']:.1f}%")
+                        st.code(ext['assembly_example'], language='asm')
+            
+            # Export options
+            st.subheader("Export Extensions")
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                if st.button("📋 Copy Assembly Code"):
+                    generator = ISAGenerator()
+                    assembly_code = generator.export_to_assembly(isa_extensions[:max_extensions])
+                    st.code(assembly_code, language='asm')
+            
+            with col2:
+                if st.button("📄 Download JSON"):
+                    generator = ISAGenerator()
+                    json_data = generator.export_to_json(isa_extensions[:max_extensions])
+                    st.download_button(
+                        label="Download ISA Extensions JSON",
+                        data=json_data,
+                        file_name="isa_extensions.json",
+                        mime="application/json"
+                    )
+        else:
+            st.info("No ISA extensions generated. Try running the analysis with different parameters.")
+    
+    with tab3:
+        st.header("RISC-V Emulator")
+        st.markdown("Simulate the performance of your custom ISA extensions")
+        
+        # Embed the emulator
+        emulator_path = Path(__file__).parent.parent / "emulator" / "web_riscv_emulator.html"
+        
+        if emulator_path.exists():
+            # Read and display the emulator
+            with open(emulator_path, 'r') as f:
+                html_content = f.read()
+            
+            st.components.v1.html(html_content, height=1200, scrolling=True)
+        else:
+            st.error("Emulator not found. Please ensure web_riscv_emulator.html exists.")
+            
+            # Fallback: simple code editor
+            st.subheader("Assembly Code Editor")
+            sample_code = """# Sample RISC-V Assembly with Custom Extensions
+li x10, 0x1000      # Input data address
+li x11, 0x2000      # Weights address
+vconv.8 x10, x11, x12    # Custom convolution instruction
+relu.v x12, x13          # Custom ReLU instruction
+"""
+            
+            assembly_code = st.text_area(
+                "Enter RISC-V assembly code:",
+                value=sample_code,
+                height=300
+            )
+            
+            if st.button("Simulate Execution"):
+                st.info("Emulator simulation would run here...")
+    
+    with tab4:
+        st.header("Performance Analysis")
+        
+        if isa_extensions:
+            # Calculate overall performance improvement
+            analyzer = PerformanceAnalyzer()
+            analysis = analyzer.analyze_improvements(profile_data, isa_extensions)
+            
+            # Overall metrics
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric(
+                    "Overall Speedup", 
+                    f"{analysis['overall_speedup']:.2f}x",
+                    delta=f"{(analysis['overall_speedup'] - 1) * 100:.1f}%"
+                )
+            with col2:
+                st.metric(
+                    "Instruction Reduction", 
+                    f"{analysis['total_instruction_reduction']:.1f}%"
+                )
+            with col3:
+                st.metric(
+                    "Energy Savings", 
+                    f"{analysis['estimated_energy_savings']:.1f}%"
+                )
+            with col4:
+                st.metric(
+                    "Code Size Change", 
+                    f"{analysis['code_size_change']:.1f}%"
+                )
+            
+            # Detailed analysis
+            st.subheader("Detailed Impact Analysis")
+            
+            impact_data = []
+            for ext in isa_extensions[:max_extensions]:
+                impact_data.append({
+                    'Instruction': ext['name'],
+                    'Target Layer': ext['target_layer'],
+                    'Speedup': f"{ext['estimated_speedup']:.1f}x",
+                    'Instruction Reduction': f"{ext['instruction_reduction']:.1f}%",
+                    'Category': ext['category']
+                })
+            
+            st.dataframe(pd.DataFrame(impact_data), use_container_width=True)
+            
+            # Performance timeline
+            st.subheader("Execution Timeline Comparison")
+            
+            # Create timeline comparison chart
+            timeline_data = {
+                'Stage': ['Original Model', 'With ISA Extensions'],
+                'Execution Time': [profile_data['total_time'], profile_data['total_time'] / analysis['overall_speedup']],
+                'Instructions': [10000, 10000 * (1 - analysis['total_instruction_reduction']/100)]  # Estimated
+            }
+            
+            fig_timeline = go.Figure()
+            fig_timeline.add_trace(go.Bar(
+                name='Execution Time (s)',
+                x=timeline_data['Stage'],
+                y=timeline_data['Execution Time'],
+                yaxis='y',
+                offsetgroup=1
+            ))
+            fig_timeline.add_trace(go.Bar(
+                name='Instruction Count',
+                x=timeline_data['Stage'],
+                y=timeline_data['Instructions'],
+                yaxis='y2',
+                offsetgroup=2
+            ))
+            
+            fig_timeline.update_layout(
+                title='Performance Comparison: Original vs ISA-Extended',
+                xaxis=dict(title='Configuration'),
+                yaxis=dict(title='Execution Time (s)', side='left'),
+                yaxis2=dict(title='Instruction Count', side='right', overlaying='y'),
+                barmode='group'
+            )
+            
+            st.plotly_chart(fig_timeline, use_container_width=True)
+        
+        else:
+            st.info("Performance analysis will be available after ISA extensions are generated.")
+
+if __name__ == "__main__":
+    main()
