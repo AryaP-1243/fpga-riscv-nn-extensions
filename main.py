@@ -19,6 +19,11 @@ sys.path.append(str(Path(__file__).parent))
 from profiler.torch_profiler import ModelProfiler
 from isa_engine.isa_generator import ISAGenerator
 from utils.analysis_tools import PerformanceAnalyzer
+from rl_optimizer.isa_rl_agent import ISAOptimizer, run_rl_optimization
+from compiler_integration.llvm_isa_backend import integrate_with_llvm
+from workload_analyzer.multi_model_analyzer import WorkloadProfiler, run_multi_model_analysis
+from advanced_analyzer.chat_interface import create_chat_interface
+from advanced_analyzer.security_analyzer import analyze_instruction_security
 
 # Configure Streamlit page
 st.set_page_config(
@@ -241,8 +246,17 @@ def main():
     if not profile_data:
         profile_data, isa_extensions = load_sample_data()
     
-    # Create tabs
-    tab1, tab2, tab3, tab4 = st.tabs(["📊 Profiling Results", "🔧 ISA Extensions", "💻 Emulator", "📈 Performance Analysis"])
+    # Create tabs with advanced features
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs([
+        "📊 Profiling Results", 
+        "🔧 ISA Extensions", 
+        "💻 Emulator", 
+        "📈 Performance Analysis",
+        "🤖 RL Optimization",
+        "🏗️ LLVM Integration",
+        "🔍 Multi-Model Analysis",
+        "🛡️ Security Analysis"
+    ])
     
     with tab1:
         st.header("Model Profiling Results")
@@ -451,6 +465,321 @@ relu.v x12, x13          # Custom ReLU instruction
         
         else:
             st.info("Performance analysis will be available after ISA extensions are generated.")
+    
+    with tab5:
+        st.header("🤖 RL-Based ISA Optimization")
+        st.markdown("Use reinforcement learning to automatically discover optimal instruction combinations")
+        
+        if st.button("🚀 Run RL Optimization", type="primary"):
+            if profile_data:
+                with st.spinner("Running RL agent to optimize ISA extensions..."):
+                    try:
+                        # Run RL optimization
+                        rl_results = run_rl_optimization(profile_data, episodes=50)
+                        
+                        # Display results
+                        st.success("RL optimization completed!")
+                        
+                        col1, col2, col3 = st.columns(3)
+                        with col1:
+                            st.metric("Best Reward", f"{rl_results['best_reward']:.2f}")
+                        with col2:
+                            st.metric("Instructions Found", len(rl_results['best_config']))
+                        with col3:
+                            st.metric("Training Episodes", len(rl_results['training_history']))
+                        
+                        # Show best configuration
+                        st.subheader("Optimal ISA Configuration")
+                        if rl_results['best_config']:
+                            for i, instruction in enumerate(rl_results['best_config'], 1):
+                                st.write(f"{i}. **{instruction}**")
+                        else:
+                            st.info("No optimal configuration found. Try adjusting parameters.")
+                        
+                        # Training progress
+                        st.subheader("Training Progress")
+                        training_data = rl_results['training_history']
+                        if training_data:
+                            import pandas as pd
+                            df = pd.DataFrame(training_data)
+                            
+                            fig_training = px.line(df, x='episode', y='reward', 
+                                                title='RL Training Progress')
+                            st.plotly_chart(fig_training, use_container_width=True)
+                            
+                            # Show training statistics
+                            st.write(f"Final reward: {training_data[-1]['reward']:.2f}")
+                            st.write(f"Best episode: {max(training_data, key=lambda x: x['reward'])['episode']}")
+                        
+                        # Store results
+                        st.session_state.rl_results = rl_results
+                        
+                    except Exception as e:
+                        st.error(f"RL optimization failed: {str(e)}")
+                        st.info("This feature requires neural network profiling data.")
+            else:
+                st.warning("Please run model profiling first to enable RL optimization.")
+        
+        # Show previous results if available
+        if 'rl_results' in st.session_state:
+            st.subheader("Previous RL Results")
+            results = st.session_state.rl_results
+            st.write(f"Best configuration: {', '.join(results['best_config'])}")
+    
+    with tab6:
+        st.header("🏗️ LLVM Compiler Integration")
+        st.markdown("Generate LLVM backend code for custom RISC-V instructions")
+        
+        if isa_extensions:
+            if st.button("🔨 Generate LLVM Backend", type="primary"):
+                with st.spinner("Generating LLVM integration files..."):
+                    try:
+                        # Generate LLVM backend
+                        llvm_results = integrate_with_llvm(isa_extensions[:5])  # Limit to 5 instructions
+                        
+                        st.success("LLVM backend files generated successfully!")
+                        
+                        # Show generated files
+                        st.subheader("Generated Files")
+                        st.write(f"📁 **Backend Directory**: {llvm_results['backend_dir']}")
+                        st.write(f"📄 **Source File**: {llvm_results['source_file']}")
+                        st.write(f"🔧 **Compile Script**: {llvm_results['compile_script']}")
+                        
+                        # Show instructions
+                        st.subheader("Instructions Integrated")
+                        for instruction in llvm_results['instructions_used']:
+                            st.write(f"• {instruction}")
+                        
+                        # Sample C++ code
+                        st.subheader("Sample Implementation")
+                        cpp_sample = f"""// Neural network with custom RISC-V instructions
+#include <iostream>
+#include <vector>
+
+extern "C" {{
+    void __builtin_riscv_vconv_8(uint8_t* input, uint8_t* weights, uint8_t* output, int h, int w, int c);
+    void __builtin_riscv_relu_v(uint8_t* input, uint8_t* output, int size);
+}}
+
+int main() {{
+    std::vector<uint8_t> input(224*224*3);
+    std::vector<uint8_t> weights(64*3*7*7);
+    std::vector<uint8_t> output(224*224*64);
+    
+    // Use custom convolution instruction
+    __builtin_riscv_vconv_8(input.data(), weights.data(), output.data(), 224, 224, 3);
+    
+    // Use custom ReLU instruction
+    __builtin_riscv_relu_v(output.data(), output.data(), output.size());
+    
+    std::cout << "Neural network executed with custom ISA!" << std::endl;
+    return 0;
+}}"""
+                        st.code(cpp_sample, language='cpp')
+                        
+                        # Compilation instructions
+                        st.subheader("Compilation Instructions")
+                        st.code(f"""# Compile with RISC-V toolchain
+riscv64-linux-gnu-g++ -march=rv64gc -mabi=lp64d -O2 \\
+    -o neural_network {llvm_results['source_file']}
+
+# Run with QEMU
+qemu-riscv64 -L /usr/riscv64-linux-gnu neural_network""", language='bash')
+                        
+                    except Exception as e:
+                        st.error(f"LLVM integration failed: {str(e)}")
+        else:
+            st.info("Generate ISA extensions first to enable LLVM integration.")
+    
+    with tab7:
+        st.header("🔍 Multi-Model Workload Analysis")
+        st.markdown("Compare optimization potential across different neural network types")
+        
+        if st.button("🔬 Run Multi-Model Analysis", type="primary"):
+            with st.spinner("Analyzing CNN, Transformer, SNN, TinyML, and GAN workloads..."):
+                try:
+                    # Run multi-model analysis
+                    workload_profiler = WorkloadProfiler()
+                    analysis_results = workload_profiler.analyze_all_workloads()
+                    
+                    st.success("Multi-model analysis completed!")
+                    
+                    # Create comparison chart
+                    comparison_data = []
+                    for model_type, results in analysis_results.items():
+                        if 'error' not in results:
+                            opt_potential = results['optimization_potential']
+                            comparison_data.append({
+                                'Model Type': model_type,
+                                'Max Speedup': opt_potential['max_theoretical_speedup'],
+                                'ISA Potential': opt_potential['isa_extension_potential'],
+                                'Bottleneck %': opt_potential['bottleneck_percentage'],
+                                'Memory Optimization': opt_potential['memory_optimization_potential']
+                            })
+                    
+                    if comparison_data:
+                        df_comparison = pd.DataFrame(comparison_data)
+                        
+                        # Speedup potential chart
+                        fig_speedup = px.bar(df_comparison, x='Model Type', y='Max Speedup',
+                                           title='Maximum Theoretical Speedup by Model Type',
+                                           color='Max Speedup')
+                        st.plotly_chart(fig_speedup, use_container_width=True)
+                        
+                        # ISA potential chart
+                        fig_isa = px.bar(df_comparison, x='Model Type', y='ISA Potential',
+                                       title='ISA Extension Potential Score',
+                                       color='ISA Potential')
+                        st.plotly_chart(fig_isa, use_container_width=True)
+                        
+                        # Summary table
+                        st.subheader("Detailed Comparison")
+                        st.dataframe(df_comparison, use_container_width=True)
+                        
+                        # Generate recommendations
+                        st.subheader("Optimization Recommendations")
+                        best_model = max(comparison_data, key=lambda x: x['Max Speedup'])
+                        st.success(f"**{best_model['Model Type']}** shows highest optimization potential "
+                                 f"with {best_model['Max Speedup']:.1f}x theoretical speedup")
+                        
+                        for model_data in comparison_data:
+                            model_type = model_data['Model Type']
+                            if model_type == 'CNN':
+                                st.info("🔧 CNNs benefit from convolution-specific instructions like VCONV.FUSED")
+                            elif model_type == 'Transformer':
+                                st.info("🔧 Transformers need matrix multiplication acceleration like MHATTN.BLOCK")
+                            elif model_type == 'SNN':
+                                st.info("🔧 SNNs require sparse computation instructions like SPIKE.THRESH")
+                    
+                    # Store results
+                    st.session_state.multi_model_results = analysis_results
+                    
+                except Exception as e:
+                    st.error(f"Multi-model analysis failed: {str(e)}")
+                    st.info("Using sample data for demonstration")
+        
+        # Show previous results if available
+        if 'multi_model_results' in st.session_state:
+            st.subheader("Analysis Summary")
+            results = st.session_state.multi_model_results
+            st.write(f"Models analyzed: {len([r for r in results.values() if 'error' not in r])}")
+    
+    with tab8:
+        st.header("🛡️ Security-Aware ISA Design")
+        st.markdown("Analyze security risks and generate hardened instruction variants")
+        
+        # Environment selection
+        environment = st.selectbox(
+            "Target Deployment Environment",
+            ["edge", "server", "mobile", "automotive"],
+            help="Security requirements vary by deployment environment"
+        )
+        
+        if isa_extensions and st.button("🔒 Analyze Security Risks", type="primary"):
+            with st.spinner("Analyzing security risks and generating secure variants..."):
+                try:
+                    # Run security analysis
+                    security_results = analyze_instruction_security(isa_extensions, environment)
+                    
+                    st.success("Security analysis completed!")
+                    
+                    # Summary metrics
+                    summary = security_results['summary']
+                    col1, col2, col3, col4 = st.columns(4)
+                    with col1:
+                        st.metric("Instructions Analyzed", summary['total_analyzed'])
+                    with col2:
+                        st.metric("High Risk", summary['high_risk'])
+                    with col3:
+                        st.metric("Secure Variants", summary['secure_variants'])
+                    with col4:
+                        st.metric("Recommendations", summary['recommendations'])
+                    
+                    # Risk analysis
+                    risks = security_results['risk_analysis']
+                    
+                    if risks['high_risk']:
+                        st.subheader("⚠️ High-Risk Instructions")
+                        for risk in risks['high_risk']:
+                            with st.expander(f"🚨 {risk['instruction']}", expanded=True):
+                                st.write("**Threats:**")
+                                for threat in risk['risks']:
+                                    st.write(f"• {threat.replace('_', ' ').title()}")
+                                st.write("**Mitigation:**")
+                                for mitigation in risk['mitigation']:
+                                    st.write(f"• {mitigation}")
+                    
+                    # Secure variants
+                    secure_instructions = security_results['secure_instructions']
+                    if secure_instructions:
+                        st.subheader("🔐 Security-Enhanced Variants")
+                        for secure_inst in secure_instructions[:5]:
+                            with st.expander(f"🛡️ {secure_inst['name']}"):
+                                st.write(f"**Description:** {secure_inst['description']}")
+                                st.write(f"**Security Features:** {', '.join(secure_inst.get('security_features', []))}")
+                                st.write(f"**Performance Impact:** {secure_inst.get('estimated_speedup', 1.0):.1f}x")
+                                if 'security_rationale' in secure_inst:
+                                    st.write(f"**Rationale:** {secure_inst['security_rationale']}")
+                                st.code(secure_inst.get('assembly_example', ''), language='asm')
+                    
+                    # Security recommendations
+                    st.subheader("📋 Security Recommendations")
+                    for i, rec in enumerate(risks['recommendations'], 1):
+                        st.write(f"{i}. {rec}")
+                    
+                    # Export options
+                    st.subheader("📤 Export Security Analysis")
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        if st.button("Download Security Report"):
+                            report = security_results['security_report']
+                            st.download_button(
+                                label="📄 Download Report",
+                                data=report,
+                                file_name="security_analysis_report.md",
+                                mime="text/markdown"
+                            )
+                    
+                    with col2:
+                        if st.button("Download Secure Instructions"):
+                            import json
+                            secure_data = json.dumps(secure_instructions, indent=2)
+                            st.download_button(
+                                label="📋 Download JSON",
+                                data=secure_data,
+                                file_name="secure_isa_extensions.json",
+                                mime="application/json"
+                            )
+                    
+                    # Store results
+                    st.session_state.security_results = security_results
+                    
+                except Exception as e:
+                    st.error(f"Security analysis failed: {str(e)}")
+        
+        else:
+            st.info("Generate ISA extensions first to enable security analysis.")
+            
+            # Show security best practices
+            st.subheader("🔒 Security Best Practices")
+            st.markdown("""
+            **For Edge/IoT Deployments:**
+            - Implement constant-time execution for all crypto operations
+            - Add fault detection to critical instructions
+            - Use control flow integrity for all branches
+            - Implement secure boot and attestation
+            
+            **For Server Deployments:**
+            - Focus on cache-timing attack prevention
+            - Implement speculative execution barriers
+            - Use memory protection and isolation
+            - Add instruction-level integrity checking
+            """)
+    
+    # Add chat interface at the bottom
+    st.markdown("---")
+    create_chat_interface()
 
 if __name__ == "__main__":
     main()

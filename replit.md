@@ -1,6 +1,14 @@
 # Overview
 
-The AI-Guided RISC-V ISA Extension Tool is an intelligent system that analyzes neural network performance and generates custom RISC-V instruction set extensions to accelerate embedded AI workloads. The project combines AI-powered profiling with instruction set architecture (ISA) extension generation to optimize neural network performance on RISC-V processors. It identifies computational bottlenecks in PyTorch and ONNX models, suggests custom RISC-V instructions, and provides performance simulation through a web-based emulator with real-time visualization.
+The AI-Guided RISC-V ISA Extension Tool is an advanced intelligent system that analyzes neural network performance and generates custom RISC-V instruction set extensions to accelerate embedded AI workloads. The project combines AI-powered profiling with instruction set architecture (ISA) extension generation to optimize neural network performance on RISC-V processors. 
+
+**Advanced Features:**
+- Neural Architecture Search (NAS) and Reinforcement Learning agents for autonomous instruction exploration
+- Real LLVM compiler integration with custom backend generation
+- Multi-model workload analysis (CNNs, Transformers, SNNs, TinyML, GANs)
+- Security-aware instruction design with side-channel resistance and fault detection
+- Chat-like interface for natural language ISA optimization
+- Comprehensive performance analysis with ≥2× speedup targets and 30-50% instruction count reduction
 
 # User Preferences
 
