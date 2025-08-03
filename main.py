@@ -335,14 +335,16 @@ def main():
                 elif model_selection_type == "Sample Templates":
                     # Use sample templates
                     profiler = ModelProfiler()
-                    if template_type == "ResNet-like":
-                        model = profiler.create_sample_resnet()
-                    elif template_type == "MobileNet-like":
-                        model = profiler.create_sample_mobilenet()
-                    else:
-                        model = profiler.create_simple_cnn()
                     
-                    profile_data = profiler.profile_pytorch_model(model, input_shape=(1, 3, 224, 224))
+                    # Map template types to model types
+                    model_type_mapping = {
+                        "ResNet-like": "resnet",
+                        "MobileNet-like": "mobilenet",
+                        "Simple CNN": "simple"
+                    }
+                    
+                    model_type = model_type_mapping.get(template_type, "simple")
+                    profile_data = profiler.profile_sample_model(model_type)
                     profile_data['model_metadata'] = {
                         'name': template_type,
                         'category': 'Sample Template'
