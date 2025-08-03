@@ -1,0 +1,190 @@
+Absolutely. Here’s a very detailed prompt in pure text format, designed for use with Replit AI (Ghostwriter) or even as instructions for manual coding. You can copy-paste this entire block into Replit to kickstart the AI-Guided RISC-V ISA Extension project from scratch.
+
+⸻
+
+🧠🔧 Prompt: Build a Complete Project on Replit
+
+🎯 Title: AI-Guided Instruction Set Extension for RISC-V to Accelerate Embedded Neural Network Operations
+
+⸻
+
+🧩 Project Objective:
+
+Develop a Replit-based project that analyzes a deep learning model (like MobileNet or Tiny-YOLO), identifies compute-heavy operations using AI-based profiling, and generates custom RISC-V instruction set extensions to accelerate those operations. Simulate and evaluate the effectiveness of these instructions using a RISC-V emulator and display performance results on a Streamlit dashboard.
+
+⸻
+
+🛠️ Technologies to Use in Replit:
+	•	Python 3 (main logic)
+	•	PyTorch or ONNX for model handling
+	•	WebRISC-V Emulator (JavaScript or WASM version)
+	•	Streamlit for dashboard
+	•	Replit’s Ghostwriter (for intelligent suggestions)
+
+⸻
+
+📁 Required Project Structure:
+
+riscv_ai_extension/
+├── profiler/
+│   └── torch_profiler.py               # PyTorch model profiler
+├── isa_engine/
+│   └── isa_generator.py                # Custom ISA generator using profiling data
+├── emulator/
+│   └── web_riscv_emulator.html         # Web-based RISC-V code simulator
+├── model/
+│   └── mobilenet_quantized.onnx        # Quantized model (ONNX format preferred)
+├── dashboard/
+│   └── app.py                          # Streamlit dashboard
+├── utils/
+│   └── analysis_tools.py               # Instruction count, speedup calc
+├── main.py                             # Project entry point
+└── README.md                           # Detailed project overview
+
+
+⸻
+
+🔍 Module Details:
+
+1. torch_profiler.py
+
+Purpose: Profile a PyTorch or ONNX model to extract high-compute operations.
+
+# Load model
+# Register hooks on each layer to capture:
+# - Execution time
+# - FLOPs
+# - Operation type (conv2d, matmul, relu)
+# Output: Dictionary with layer name, op type, time %, input/output sizes
+
+
+⸻
+
+2. isa_generator.py
+
+Purpose: Use AI logic or predefined rules to suggest new RISC-V instructions.
+
+# Input: Profile data from profiler module
+# AI Logic: If "Conv2D" or "MatMul" layers exceed 20% of total compute time,
+# suggest custom instructions like:
+#    VMMUL r1, r2, r3     ; Vector-Matrix Multiply
+#    RELU_FAST r4         ; Fast ReLU instruction
+# Output: Assembly-like pseudo-instruction definitions
+# Optionally save in JSON or Markdown format
+
+
+⸻
+
+3. web_riscv_emulator.html
+
+Purpose: Simulate the custom RISC-V instructions in-browser.
+
+<!-- Embed or modify https://github.com/luismesas/web-riscv -->
+<!-- Allow custom assembly code input -->
+<!-- Parse extended instructions (even if simulated at first) -->
+<!-- Return mock: 
+     - Execution cycles
+     - Register state
+     - Comparison with standard instruction sequences -->
+
+
+⸻
+
+4. app.py (Streamlit Dashboard)
+
+Purpose: Display performance metrics, profiling results, and ISA benefits.
+
+# Tabs/Sections:
+# 1. Model Profiler Summary
+#    - Top 5 time-consuming layers
+# 2. Suggested Custom Instructions
+#    - Rendered assembly blocks
+# 3. Emulator Output
+#    - Before/after performance comparison
+# 4. Charts:
+#    - Speedup (bar chart)
+#    - Instruction count delta
+#    - Timeline of execution
+
+
+⸻
+
+5. main.py
+
+Purpose: Orchestrate the full pipeline.
+
+# CLI or Streamlit callable
+# Step 1: Load model
+# Step 2: Profile model
+# Step 3: Generate ISA extensions
+# Step 4: Run WebRISC-V emulator
+# Step 5: Feed emulator output to Streamlit dashboard
+
+
+⸻
+
+6. analysis_tools.py
+
+Purpose: Utility functions to evaluate speedup and efficiency.
+
+# Given: instruction logs from emulator (before/after)
+# Compute:
+# - % speedup
+# - Reduced instruction count
+# - Simulated energy usage (based on assumed power model)
+# Return analysis in dictionary or CSV
+
+
+⸻
+
+📈 Sample Instruction Output Format (for isa_generator.py)
+
+[
+  {
+    "name": "VMMUL",
+    "description": "Vector-Matrix Multiply for 8-bit tensors",
+    "operands": ["r1", "r2", "r3"],
+    "category": "neural_op",
+    "opcode": "0xC3"
+  },
+  {
+    "name": "RELU_FAST",
+    "description": "Fast ReLU operation with clipping",
+    "operands": ["r4"],
+    "category": "activation",
+    "opcode": "0xC7"
+  }
+]
+
+
+⸻
+
+📊 Final Output Goals:
+
+Metric	Goal
+Speedup	≥ 2× for selected ops
+Instruction Count	↓ 30–50%
+Code Size	Not significantly increased
+Energy Use (Sim.)	↓ 20% with optimized instructions
+
+
+⸻
+
+✅ Key Features to Ask Replit AI To Implement:
+	1.	Profiling system for ONNX or PyTorch models with execution time stats.
+	2.	AI rule-based system that maps profiling data to instruction extensions.
+	3.	Simple frontend for writing and testing extended RISC-V instructions.
+	4.	Emulator integration or mock simulation (if direct hardware emulation not feasible).
+	5.	Streamlit dashboard to visualize before/after performance.
+
+⸻
+
+🎯 Stretch Goals:
+	•	Add model conversion using TVM or ONNX Runtime
+	•	Integrate code generation from ISA to LLVM backend
+	•	Auto-generate an IEEE-style PDF report
+	•	Build a tiny compiler to translate PyTorch ops to your custom ISA
+
+⸻
+
+Would you like a GitHub-ready README, or a ready-to-paste Replit template project JSON to start this immediately?
