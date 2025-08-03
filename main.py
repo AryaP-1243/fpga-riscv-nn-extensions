@@ -24,6 +24,10 @@ from compiler_integration.llvm_isa_backend import integrate_with_llvm
 from workload_analyzer.multi_model_analyzer import WorkloadProfiler, run_multi_model_analysis
 from advanced_analyzer.chat_interface import create_chat_interface
 from advanced_analyzer.security_analyzer import analyze_instruction_security
+from models.preloaded_models import model_manager, ModelCategory
+from models.model_search import search_engine
+from models.model_demo import model_demonstrator
+from models.model_catalog import catalog_viewer
 
 # Configure Streamlit page
 st.set_page_config(
@@ -159,18 +163,114 @@ def main():
     # Sidebar
     st.sidebar.header("⚙️ Configuration")
     
-    # Model selection
-    model_option = st.sidebar.selectbox(
-        "Select Model Type",
-        ["Sample MobileNet", "Sample ResNet", "Upload ONNX Model"]
+    # Get models organized by category
+    models_by_category = model_manager.get_models_by_category()
+    
+    # Model selection with categories
+    model_selection_type = st.sidebar.selectbox(
+        "Model Source",
+        ["Preloaded Models (30+)", "Upload ONNX Model", "Sample Templates"]
     )
     
+    # Model selection logic
+    selected_model_id = None
     uploaded_file = None
-    if model_option == "Upload ONNX Model":
+    
+    if model_selection_type == "Preloaded Models (30+)":
+        st.sidebar.markdown("**🏗️ Choose from 30+ Preloaded Models**")
+        
+        # Category selection
+        selected_category = st.sidebar.selectbox(
+            "Model Category",
+            list(models_by_category.keys()),
+            help="Choose the type of neural network for your analysis"
+        )
+        
+        # Model selection within category
+        models_in_category = models_by_category[selected_category]
+        model_display_names = []
+        model_id_mapping = {}
+        
+        for model_id in models_in_category:
+            info = model_manager.get_model_info(model_id)
+            display_name = f"{info['name']} ({info['parameters']}, {info['complexity']})"
+            model_display_names.append(display_name)
+            model_id_mapping[display_name] = model_id
+        
+        selected_display_name = st.sidebar.selectbox(
+            f"Select {selected_category} Model",
+            model_display_names,
+            help="Models show (parameters, complexity level)"
+        )
+        
+        selected_model_id = model_id_mapping[selected_display_name]
+        
+        # Show model information
+        model_info = model_manager.get_model_info(selected_model_id)
+        
+        with st.sidebar.expander("📋 Model Details", expanded=True):
+            st.write(f"**Name:** {model_info['name']}")
+            st.write(f"**Category:** {model_info['category']}")
+            st.write(f"**Parameters:** {model_info['parameters']}")
+            st.write(f"**Complexity:** {model_info['complexity']}")
+            st.write(f"**Input Shape:** {model_info['input_shape']}")
+            st.write(f"**Use Case:** {model_info['use_case']}")
+            st.write(f"**Description:** {model_info['description']}")
+        
+        # Model search and recommendations
+        with st.sidebar.expander("🔍 Model Search & Recommendations"):
+            search_query = st.text_input("Search models:", placeholder="e.g., mobile, efficient, detection")
+            
+            if search_query:
+                search_results = search_engine.search_models(search_query, selected_category)
+                st.write(f"Found {len(search_results)} matching models:")
+                for result_id in search_results[:5]:
+                    result_info = model_manager.get_model_info(result_id)
+                    st.write(f"• **{result_info['name']}** - {result_info['complexity']}")
+            
+            # Get recommendations based on use case
+            st.write("**💡 Recommendations:**")
+            recommendations = search_engine.get_recommendations(model_info['use_case'])
+            for rec_id, reason in recommendations[:3]:
+                if rec_id in model_manager.models_catalog:
+                    rec_info = model_manager.get_model_info(rec_id)
+                    st.write(f"• **{rec_info['name']}**: {reason}")
+        
+        # Performance constraints filter
+        with st.sidebar.expander("⚡ Performance Constraints"):
+            max_params = st.selectbox(
+                "Max Parameters",
+                [None, 1000000, 5000000, 25000000, 100000000],
+                format_func=lambda x: "No limit" if x is None else f"{x/1000000:.0f}M params"
+            )
+            
+            target_platform = st.selectbox(
+                "Target Platform",
+                [None, "mobile", "edge", "server"],
+                format_func=lambda x: "Any platform" if x is None else x.title()
+            )
+            
+            if st.button("🔧 Filter Models"):
+                filtered_models = search_engine.filter_by_constraints(
+                    max_params=max_params,
+                    target_platform=target_platform
+                )
+                st.write(f"Found {len(filtered_models)} models matching constraints:")
+                for filt_id in filtered_models[:5]:
+                    filt_info = model_manager.get_model_info(filt_id)
+                    st.write(f"• {filt_info['name']} ({filt_info['parameters']})")
+    
+    elif model_selection_type == "Upload ONNX Model":
         uploaded_file = st.sidebar.file_uploader(
             "Choose ONNX model file", 
             type=['onnx'],
-            help="Upload an ONNX model file (max 10MB)"
+            help="Upload an ONNX model file for analysis"
+        )
+    
+    else:  # Sample Templates
+        template_type = st.sidebar.selectbox(
+            "Model Template",
+            ["MobileNet-like", "ResNet-like", "Simple CNN"]
         )
     
     # Analysis options
@@ -199,7 +299,27 @@ def main():
     if run_analysis or 'profile_data' not in st.session_state:
         with st.spinner("Running model profiling and ISA generation..."):
             try:
-                if uploaded_file is not None:
+                if model_selection_type == "Preloaded Models (30+)" and selected_model_id:
+                    # Load and profile preloaded model
+                    model, model_metadata = model_manager.load_model(selected_model_id)
+                    model_summary = model_manager.get_model_summary(selected_model_id)
+                    
+                    profiler = ModelProfiler()
+                    input_shape = model_info['input_shape']
+                    if len(input_shape) == 3:
+                        sample_input = (1, *input_shape)
+                    else:
+                        sample_input = (1, *input_shape)
+                    
+                    profile_data = profiler.profile_pytorch_model(model, input_shape=sample_input)
+                    profile_data['model_metadata'] = {
+                        'id': selected_model_id,
+                        'name': model_info['name'],
+                        'category': model_info['category'],
+                        'summary': model_summary
+                    }
+                    
+                elif uploaded_file is not None:
                     # Save uploaded file temporarily
                     temp_path = f"temp_{uploaded_file.name}"
                     with open(temp_path, "wb") as f:
@@ -211,20 +331,29 @@ def main():
                     
                     # Clean up
                     os.remove(temp_path)
+                    
+                elif model_selection_type == "Sample Templates":
+                    # Use sample templates
+                    profiler = ModelProfiler()
+                    if template_type == "ResNet-like":
+                        model = profiler.create_sample_resnet()
+                    elif template_type == "MobileNet-like":
+                        model = profiler.create_sample_mobilenet()
+                    else:
+                        model = profiler.create_simple_cnn()
+                    
+                    profile_data = profiler.profile_pytorch_model(model, input_shape=(1, 3, 224, 224))
+                    profile_data['model_metadata'] = {
+                        'name': template_type,
+                        'category': 'Sample Template'
+                    }
                 else:
                     # Use sample data for demo
                     profile_data, isa_extensions = load_sample_data()
                     
-                    # Generate ISA extensions if not using sample
-                    if model_option != "Sample MobileNet":
-                        profiler = ModelProfiler()
-                        if "ResNet" in model_option:
-                            profile_data = profiler.profile_sample_model("resnet")
-                        else:
-                            profile_data = profiler.profile_sample_model("mobilenet")
-                        
-                        generator = ISAGenerator()
-                        isa_extensions = generator.generate_extensions(profile_data)
+                    # Generate ISA extensions
+                    generator = ISAGenerator()
+                    isa_extensions = generator.generate_instructions(profile_data)['instructions']
                 
                 # Store in session state
                 st.session_state.profile_data = profile_data
@@ -246,8 +375,9 @@ def main():
     if not profile_data:
         profile_data, isa_extensions = load_sample_data()
     
-    # Create tabs with advanced features
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs([
+    # Create tabs with advanced features including model catalog
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs([
+        "📚 Model Catalog",
         "📊 Profiling Results", 
         "🔧 ISA Extensions", 
         "💻 Emulator", 
@@ -259,18 +389,138 @@ def main():
     ])
     
     with tab1:
+        # Model Catalog Tab
+        catalog_tab1, catalog_tab2, catalog_tab3, catalog_tab4 = st.tabs([
+            "📖 Catalog Overview", 
+            "🔍 Browse Models", 
+            "⚖️ Compare Models", 
+            "🤖 AI Recommendations"
+        ])
+        
+        with catalog_tab1:
+            catalog_viewer.show_catalog_overview()
+        
+        with catalog_tab2:
+            catalog_viewer.show_interactive_browser()
+        
+        with catalog_tab3:
+            catalog_viewer.show_comparison_tool()
+        
+        with catalog_tab4:
+            catalog_viewer.show_recommendations_engine()
+    
+    with tab2:
         st.header("Model Profiling Results")
         
-        # Summary metrics
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
-            st.metric("Total Execution Time", f"{profile_data['total_time']:.3f}s")
-        with col2:
-            st.metric("Number of Layers", len(profile_data['layers']))
-        with col3:
-            st.metric("Bottleneck Layers", len(profile_data['bottlenecks']))
-        with col4:
-            st.metric("Model Type", profile_data['model_type'].title())
+        # Enhanced model summary with preloaded model info
+        if 'model_metadata' in profile_data:
+            metadata = profile_data['model_metadata']
+            
+            # Model information header
+            st.subheader(f"📊 {metadata.get('name', 'Unknown Model')}")
+            
+            col1, col2, col3, col4 = st.columns(4)
+            
+            with col1:
+                st.metric(
+                    "Total Execution Time", 
+                    f"{profile_data['total_time']:.3f}s"
+                )
+            
+            with col2:
+                st.metric(
+                    "Model Category", 
+                    metadata.get('category', 'Unknown')
+                )
+            
+            with col3:
+                layers_count = len(profile_data['layers'])
+                st.metric("Layers Analyzed", layers_count)
+            
+            with col4:
+                if 'summary' in metadata:
+                    summary = metadata['summary']
+                    params = summary.get('total_parameters', 0)
+                    if params > 1000000:
+                        param_str = f"{params/1000000:.1f}M"
+                    elif params > 1000:
+                        param_str = f"{params/1000:.1f}K"
+                    else:
+                        param_str = str(params)
+                    st.metric("Parameters", param_str)
+            
+            # Detailed model information
+            if 'summary' in metadata:
+                summary = metadata['summary']
+                
+                # Create expandable sections for better organization
+                with st.expander("🔍 Detailed Model Analysis", expanded=True):
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        st.write("**Model Architecture:**")
+                        st.write(f"• **Input Shape:** {summary.get('input_shape', 'Unknown')}")
+                        st.write(f"• **Total Parameters:** {summary.get('total_parameters', 0):,}")
+                        st.write(f"• **Trainable Parameters:** {summary.get('trainable_parameters', 0):,}")
+                        st.write(f"• **Model Complexity:** {summary.get('complexity', 'Unknown')}")
+                        
+                        if 'estimated_flops' in summary:
+                            flops = summary['estimated_flops']
+                            if flops > 1e9:
+                                flops_str = f"{flops/1e9:.2f} GFLOPs"
+                            elif flops > 1e6:
+                                flops_str = f"{flops/1e6:.2f} MFLOPs"
+                            else:
+                                flops_str = f"{flops/1e3:.2f} KFLOPs"
+                            st.write(f"• **Estimated FLOPs:** {flops_str}")
+                    
+                    with col2:
+                        st.write("**Performance Characteristics:**")
+                        st.write(f"• **Use Case:** {summary.get('use_case', 'General purpose')}")
+                        if 'memory_mb' in summary:
+                            st.write(f"• **Memory Usage:** {summary['memory_mb']:.1f} MB")
+                        
+                        # ISA optimization potential
+                        layers_count = len(profile_data['layers'])
+                        if layers_count > 0:
+                            conv_layers = len([l for l in profile_data['layers'] if 'conv' in l['type'].lower()])
+                            linear_layers = len([l for l in profile_data['layers'] if 'linear' in l['type'].lower()])
+                            
+                            st.write("**ISA Optimization Potential:**")
+                            if conv_layers > 0:
+                                st.write(f"• **Convolution Layers:** {conv_layers} (High potential)")
+                            if linear_layers > 0:
+                                st.write(f"• **Linear Layers:** {linear_layers} (Medium potential)")
+                            
+                            total_compute_layers = conv_layers + linear_layers
+                            if total_compute_layers > 0:
+                                potential_score = min(100, (total_compute_layers / layers_count) * 100)
+                                st.write(f"• **Optimization Score:** {potential_score:.1f}%")
+                
+                # Add interactive demonstrations
+                with st.expander("🎮 Live Model Demo & Architecture Visualization"):
+                    demo_tab1, demo_tab2, demo_tab3 = st.tabs(["Live Demo", "Architecture", "Performance Predictions"])
+                    
+                    with demo_tab1:
+                        model_demonstrator.show_live_demo(metadata['id'])
+                    
+                    with demo_tab2:
+                        model_demonstrator.show_model_architecture(metadata['id'])
+                    
+                    with demo_tab3:
+                        model_demonstrator.show_performance_predictions(metadata['id'])
+        
+        else:
+            # Basic model summary for non-preloaded models
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric("Total Execution Time", f"{profile_data['total_time']:.3f}s")
+            with col2:
+                st.metric("Number of Layers", len(profile_data['layers']))
+            with col3:
+                st.metric("Bottleneck Layers", len(profile_data['bottlenecks']))
+            with col4:
+                st.metric("Model Type", profile_data['model_type'].title())
         
         # Layer performance chart
         fig_layers, fig_speedup, fig_reduction = create_performance_charts(profile_data, isa_extensions)
@@ -293,7 +543,7 @@ def main():
             }
         )
     
-    with tab2:
+    with tab3:
         st.header("Suggested ISA Extensions")
         
         if isa_extensions:
@@ -346,7 +596,7 @@ def main():
         else:
             st.info("No ISA extensions generated. Try running the analysis with different parameters.")
     
-    with tab3:
+    with tab4:
         st.header("RISC-V Emulator")
         st.markdown("Simulate the performance of your custom ISA extensions")
         
@@ -466,7 +716,7 @@ relu.v x12, x13          # Custom ReLU instruction
         else:
             st.info("Performance analysis will be available after ISA extensions are generated.")
     
-    with tab5:
+    with tab6:
         st.header("🤖 RL-Based ISA Optimization")
         st.markdown("Use reinforcement learning to automatically discover optimal instruction combinations")
         
@@ -525,7 +775,7 @@ relu.v x12, x13          # Custom ReLU instruction
             results = st.session_state.rl_results
             st.write(f"Best configuration: {', '.join(results['best_config'])}")
     
-    with tab6:
+    with tab7:
         st.header("🏗️ LLVM Compiler Integration")
         st.markdown("Generate LLVM backend code for custom RISC-V instructions")
         
@@ -590,7 +840,7 @@ qemu-riscv64 -L /usr/riscv64-linux-gnu neural_network""", language='bash')
         else:
             st.info("Generate ISA extensions first to enable LLVM integration.")
     
-    with tab7:
+    with tab8:
         st.header("🔍 Multi-Model Workload Analysis")
         st.markdown("Compare optimization potential across different neural network types")
         
@@ -663,7 +913,7 @@ qemu-riscv64 -L /usr/riscv64-linux-gnu neural_network""", language='bash')
             results = st.session_state.multi_model_results
             st.write(f"Models analyzed: {len([r for r in results.values() if 'error' not in r])}")
     
-    with tab8:
+    with tab9:
         st.header("🛡️ Security-Aware ISA Design")
         st.markdown("Analyze security risks and generate hardened instruction variants")
         

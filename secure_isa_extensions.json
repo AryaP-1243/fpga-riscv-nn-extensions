@@ -1,0 +1,91 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "security_framework": "RISC-V Security Extensions",
+    "threat_model": "Edge/IoT deployment",
+    "generation_timestamp": "-1542767097593617891",
+    "total_instructions": 3
+  },
+  "instructions": [
+    {
+      "name": "VCONV.8.FD",
+      "description": "Fault-detecting Vectorized 2D Convolution - 8-bit integer convolution",
+      "category": "neural_compute",
+      "operands": [
+        "rs1",
+        "rs2",
+        "rd",
+        "integrity_reg"
+      ],
+      "opcode": "0x7B",
+      "target_layer": "conv1",
+      "target_operation": "Conv2d",
+      "estimated_speedup": 3.3600000000000003,
+      "instruction_reduction": 71.5,
+      "assembly_example": "vconv.8.fd x10, x11, x12, x13",
+      "rationale": "Layer 'conv1' (Conv2d) consumes 36.3% of total execution time...",
+      "security_features": [
+        "fault_detection",
+        "integrity_checking"
+      ],
+      "security_rationale": "Detects fault injection attacks by computing results redundantly and comparing checksums. Raises exception on integrity violation."
+    },
+    {
+      "name": "VCONV.8.FD",
+      "description": "Fault-detecting Vectorized 2D Convolution - 8-bit integer convolution",
+      "category": "neural_compute",
+      "operands": [
+        "rs1",
+        "rs2",
+        "rd",
+        "integrity_reg"
+      ],
+      "opcode": "0x7B",
+      "target_layer": "conv2_1",
+      "target_operation": "Conv2d",
+      "estimated_speedup": 3.04,
+      "instruction_reduction": 65.0,
+      "assembly_example": "vconv.8.fd x10, x11, x12, x13",
+      "rationale": "Layer 'conv2_1' (Conv2d) consumes 22.0% of total execution time...",
+      "security_features": [
+        "fault_detection",
+        "integrity_checking"
+      ],
+      "security_rationale": "Detects fault injection attacks by computing results redundantly and comparing checksums. Raises exception on integrity violation."
+    },
+    {
+      "name": "RELU.V.CT",
+      "description": "Constant-time ReLU Activation Function - vectorized ReLU",
+      "category": "activation",
+      "operands": [
+        "rs1",
+        "rd"
+      ],
+      "opcode": "0x7D",
+      "target_layer": "relu1",
+      "target_operation": "ReLU",
+      "estimated_speedup": 2.16,
+      "instruction_reduction": 48.0,
+      "assembly_example": "relu.v.ct x10, x11, x12",
+      "rationale": "Layer 'relu1' (ReLU) consumes 13.1% of total execution time...",
+      "security_features": [
+        "constant_time_execution"
+      ],
+      "security_rationale": "Eliminates timing side-channels by ensuring execution time is independent of input values. Uses conditional moves instead of branches."
+    }
+  ],
+  "security_guidelines": {
+    "implementation": [
+      "All instructions must be implemented with constant-time guarantees",
+      "Fault detection variants should use redundant computation",
+      "CFI variants must validate all control transfers",
+      "Memory access patterns must be regularized"
+    ],
+    "testing": [
+      "Perform TVLA testing for side-channel resistance",
+      "Test against voltage and clock glitching",
+      "Validate CFI enforcement under attack",
+      "Measure timing variance across input ranges"
+    ]
+  }
+}
