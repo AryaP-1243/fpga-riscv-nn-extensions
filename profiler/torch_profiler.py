@@ -140,12 +140,8 @@ class ModelProfiler:
             input_shape = input_info.shape
             input_name = input_info.name
             
-            # Create dummy input
-            dummy_input = np.random.randn(*input_shape)
-            if hasattr(dummy_input, 'astype'):
-                dummy_input = dummy_input.astype(np.float32)
-            else:
-                dummy_input = np.array(dummy_input, dtype=np.float32)
+            # Create dummy input - ensure we have a numpy array
+            dummy_input = np.array(np.random.randn(*input_shape), dtype=np.float32)
             
             # Profile the model
             times = []

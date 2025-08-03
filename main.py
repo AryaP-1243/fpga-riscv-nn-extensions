@@ -304,6 +304,9 @@ def main():
     if run_analysis or 'profile_data' not in st.session_state:
         with st.spinner("Running model profiling and ISA generation..."):
             try:
+                # Initialize isa_extensions to None for all paths
+                isa_extensions = None
+                
                 if model_selection_type == "Preloaded Models (30+)" and selected_model_id:
                     # Load and profile preloaded model
                     model, model_metadata = model_manager.load_model(selected_model_id)
@@ -365,7 +368,7 @@ def main():
                     profile_data, isa_extensions = load_sample_data()
                 
                 # Ensure isa_extensions is always defined for all paths
-                if 'isa_extensions' not in locals() or isa_extensions is None:
+                if isa_extensions is None:
                     # Generate ISA extensions if not already defined
                     generator = ISAGenerator()
                     isa_extensions = generator.generate_extensions(profile_data)
