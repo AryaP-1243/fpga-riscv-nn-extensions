@@ -71,24 +71,24 @@ This project introduces a novel approach to accelerating neural network inferenc
 <div align="center">
 
 ```mermaid
-%%{init: {'flowchart': {'nodeSpacing': 8, 'rankSpacing': 12, 'curve': 'basis', 'padding': 2}, 'themeVariables': {'fontSize': '11px'}}}%%
+%%{init: {'flowchart': {'nodeSpacing': 6, 'rankSpacing': 10, 'curve': 'basis', 'padding': 1}, 'themeVariables': {'fontSize': '10px', 'lineColor': '#1f77b4', 'primaryColor': '#ffffff', 'primaryTextColor': '#1f77b4', 'primaryBorderColor': '#1f77b4'}}}%%
 graph TB
-    A[Neural Network Model]
-    A --> B[Performance Profiler]
-    B --> C[ISA Generator Engine]
-    C --> D[Custom ISA Instructions]
-    D --> E[RISC-V Core Processor]
-    E --> F[FPGA Implementation]
-    F --> G[Hardware Accelerator]
+    A[Neural Network<br/>Model]
+    A --> B[Performance<br/>Profiler]
+    B --> C[ISA Generator<br/>Engine]
+    C --> D[Custom ISA<br/>Instructions]
+    D --> E[RISC-V Core<br/>Processor]
+    E --> F[FPGA<br/>Implementation]
+    F --> G[Hardware<br/>Accelerator]
 
-    B --> H[Compiler Toolchain]
-    H --> I[LLVM Backend]
-    I --> J[Binary Images]
+    B --> H[Compiler<br/>Toolchain]
+    H --> I[LLVM<br/>Backend]
+    I --> J[Binary<br/>Images]
     J --> E
 
-    A --> K[Validation Suite]
-    K --> L[Performance Metrics]
-    L --> M[Statistical Analysis]
+    A --> K[Validation<br/>Suite]
+    K --> L[Performance<br/>Metrics]
+    L --> M[Statistical<br/>Analysis]
     M --> C
 ```
 
