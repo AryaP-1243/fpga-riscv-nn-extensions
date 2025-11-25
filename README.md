@@ -93,13 +93,13 @@ graph LR
 
 ### System Components
 
-| Component | Tech |
-|-----------|------|
-| RISC-V Core | Verilog |
-| Neural Accelerator | FPGA |
-| Memory Interface | Xilinx |
-| Compiler Backend | LLVM |
-| Validation Suite | Python |
+| C | Tech |
+|---|------|
+| Core | Verilog |
+| Accel | FPGA |
+| Mem | Xilinx |
+| Comp | LLVM |
+| Test | Python |
 
 ---
 
@@ -156,28 +156,28 @@ cd deployment
 
 | Model | ARM | Ours | Speedup |
 |-------|-----|------|---------|
-| MobileNet-V2 | 45.2 | 21.1 | **2.14×** |
-| ResNet-50 | 89.7 | 42.3 | **2.12×** |
-| EfficientNet-B0 | 28.4 | 13.5 | **2.10×** |
+| MN-V2 | 45.2 | 21.1 | **2.14×** |
+| RN-50 | 89.7 | 42.3 | **2.12×** |
+| EN-B0 | 28.4 | 13.5 | **2.10×** |
 
 Energy reduction: ~49% across all models
 
 ### 📈 Resource Utilization
 
-| Resource | Usage |
-|----------|-------|
-| LUTs | 0.43% |
-| BRAM | 11.4% |
-| DSP | 8.7% |
-| Power | 1.2W |
+| R | Usage |
+|---|-------|
+| L | 0.43% |
+| B | 11.4% |
+| D | 8.7% |
+| P | 1.2W |
 
 ### 🎯 Accuracy
 
-| Precision | Accuracy |
-|-----------|----------|
-| FP32 | 71.8% |
-| INT16 | 71.7% |
-| INT8 | 71.2% |
+| P | Accuracy |
+|---|----------|
+| 32 | 71.8% |
+| 16 | 71.7% |
+| 8 | 71.2% |
 
 INT16 accuracy loss: <0.1%
 
@@ -189,13 +189,13 @@ INT16 accuracy loss: <0.1%
 
 Our implementation introduces 12 custom RISC-V instructions:
 
-| Instr | Opcode | Function |
-|-------|--------|----------|
-| conv2d | 0x7B | Convolution |
-| maxpool | 0x7C | Pooling |
-| relu | 0x7D | ReLU |
-| matmul | 0x7E | Matrix |
-| softmax | 0x7F | Softmax |
+| I | O | F |
+|---|---|---|
+| c | 7B | Conv |
+| m | 7C | Pool |
+| r | 7D | ReLU |
+| M | 7E | Mat |
+| s | 7F | Soft |
 
 ### 📁 Project Structure
 
