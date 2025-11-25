@@ -93,13 +93,13 @@ graph TB
 
 ### System Components
 
-| Component | Description | Technology |
-|-----------|-------------|------------|
-| **RISC-V Core** | 32-bit 5-stage pipeline + custom extensions | Verilog HDL |
-| **Neural Accelerator** | Hardware matrix operation units | FPGA Fabric |
-| **Memory Interface** | AXI4-based memory management | Xilinx IP |
-| **Compiler Backend** | LLVM-based compilation support | C++/LLVM |
-| **Validation Suite** | Comprehensive testing framework | Python/PyTorch |
+| Component | Description | Tech |
+|-----------|-------------|------|
+| **RISC-V Core** | 32-bit pipeline + extensions | Verilog |
+| **Neural Accelerator** | Hardware matrix units | FPGA |
+| **Memory Interface** | AXI4 memory management | Xilinx |
+| **Compiler Backend** | LLVM compilation | C++/LLVM |
+| **Validation Suite** | Testing framework | Python |
 
 ---
 
@@ -154,20 +154,20 @@ cd deployment
 
 ### 🏆 Benchmark Results
 
-| Model | Baseline (ARM) | Ours | Speedup | Energy ↓ |
-|-------|----------------|------|---------|----------|
-| MobileNet-V2 | 45.2 ms | 21.1 ms | **2.14×** | **49.1%** |
-| ResNet-50 | 89.7 ms | 42.3 ms | **2.12×** | **48.7%** |
-| EfficientNet-B0 | 28.4 ms | 13.5 ms | **2.10×** | **47.9%** |
+| Model | ARM | Ours | Speedup | Energy ↓ |
+|-------|-----|------|---------|----------|
+| MobileNet-V2 | 45.2 | 21.1 | **2.14×** | **49.1%** |
+| ResNet-50 | 89.7 | 42.3 | **2.12×** | **48.7%** |
+| EfficientNet-B0 | 28.4 | 13.5 | **2.10×** | **47.9%** |
 
 ### 📈 Resource Utilization
 
-| Resource | Used | Available | % |
-|----------|------|-----------|---|
-| LUTs | 1,178 | 274,080 | 0.43% |
-| BRAM | 104 | 912 | 11.4% |
-| DSP | 219 | 2,520 | 8.7% |
-| Power | 1.2W | - | - |
+| Resource | Used | % |
+|----------|------|---|
+| LUTs | 1,178 / 274K | 0.43% |
+| BRAM | 104 / 912 | 11.4% |
+| DSP | 219 / 2.5K | 8.7% |
+| Power | 1.2W | - |
 
 ### 🎯 Accuracy Validation
 
@@ -185,13 +185,13 @@ cd deployment
 
 Our implementation introduces 12 custom RISC-V instructions:
 
-| Instruction | Opcode | Function | Description |
-|------------|--------|----------|-------------|
-| `conv2d` | 0x7B | Conv2D | Hardware-accelerated 2D convolution |
-| `maxpool` | 0x7C | MaxPool | 2×2 max pooling operation |
-| `relu` | 0x7D | ReLU | Rectified linear unit activation |
-| `matmul` | 0x7E | MatMul | Efficient matrix multiplication |
-| `softmax` | 0x7F | Softmax | Softmax activation function |
+| Instr | Opcode | Function |
+|-------|--------|----------|
+| `conv2d` | 0x7B | 2D Convolution |
+| `maxpool` | 0x7C | Max Pooling |
+| `relu` | 0x7D | ReLU Activation |
+| `matmul` | 0x7E | Matrix Multiply |
+| `softmax` | 0x7F | Softmax |
 
 ### 📁 Project Structure
 
