@@ -160,7 +160,7 @@ cd deployment
 | ResNet-50 | 89.7 | 42.3 | **2.12×** |
 | EfficientNet-B0 | 28.4 | 13.5 | **2.10×** |
 
-*Energy reduction: ~49% across all models*
+Energy reduction: ~49% across all models
 
 ### 📈 Resource Utilization
 
@@ -179,7 +179,7 @@ cd deployment
 | INT16 | 71.7% |
 | INT8 | 71.2% |
 
-*INT16 accuracy loss: <0.1%*
+INT16 accuracy loss: <0.1%
 
 ---
 
