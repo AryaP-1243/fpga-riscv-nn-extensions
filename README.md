@@ -2,10 +2,10 @@
 
 <div align="center">
 
-![RISC-V FPGA](https://img.shields.io/badge/RISC--V-FPGA-blue?style=for-the-badge&logo=risc-v)
-![Neural Networks](https://img.shields.io/badge/AI-Neural%20Networks-green?style=for-the-badge&logo=tensorflow)
-![FPGA](https://img.shields.io/badge/Hardware-FPGA-orange?style=for-the-badge&logo=xilinx)
-![Edge Computing](https://img.shields.io/badge/Platform-Edge%20Computing-purple?style=for-the-badge)
+![RISC-V FPGA](https://img.shields.io/badge/RISC--V-FPGA-blue?style=flat-square&logo=risc-v)
+![Neural Networks](https://img.shields.io/badge/AI-Neural%20Networks-green?style=flat-square&logo=tensorflow)
+![FPGA](https://img.shields.io/badge/Hardware-FPGA-orange?style=flat-square&logo=xilinx)
+![Edge Computing](https://img.shields.io/badge/Platform-Edge%20Computing-purple?style=flat-square)
 
 **A comprehensive framework for accelerating neural network inference on edge devices through custom RISC-V instruction set extensions implemented on FPGA**
 
@@ -95,8 +95,8 @@ graph TB
 
 | Component | Description | Technology |
 |-----------|-------------|------------|
-| **RISC-V Core** | 32-bit 5-stage pipeline with custom extensions | Verilog HDL |
-| **Neural Accelerator** | Hardware units for matrix operations | FPGA Fabric |
+| **RISC-V Core** | 32-bit 5-stage pipeline + custom extensions | Verilog HDL |
+| **Neural Accelerator** | Hardware matrix operation units | FPGA Fabric |
 | **Memory Interface** | AXI4-based memory management | Xilinx IP |
 | **Compiler Backend** | LLVM-based compilation support | C++/LLVM |
 | **Validation Suite** | Comprehensive testing framework | Python/PyTorch |
@@ -154,25 +154,25 @@ cd deployment
 
 ### 🏆 Benchmark Results
 
-| Model | Baseline (ARM) | Our Implementation | Speedup | Energy Reduction |
-|-------|----------------|-------------------|---------|------------------|
+| Model | Baseline (ARM) | Ours | Speedup | Energy ↓ |
+|-------|----------------|------|---------|----------|
 | MobileNet-V2 | 45.2 ms | 21.1 ms | **2.14×** | **49.1%** |
 | ResNet-50 | 89.7 ms | 42.3 ms | **2.12×** | **48.7%** |
 | EfficientNet-B0 | 28.4 ms | 13.5 ms | **2.10×** | **47.9%** |
 
 ### 📈 Resource Utilization
 
-| Resource | Utilization | Available |
-|----------|-------------|-----------|
-| LUTs | 0.43% | 274,080 |
-| BRAM | 11.4% | 912 |
-| DSP | 8.7% | 2,520 |
-| Power | 1.2W | - |
+| Resource | Used | Available | % |
+|----------|------|-----------|---|
+| LUTs | 1,178 | 274,080 | 0.43% |
+| BRAM | 104 | 912 | 11.4% |
+| DSP | 219 | 2,520 | 8.7% |
+| Power | 1.2W | - | - |
 
 ### 🎯 Accuracy Validation
 
-| Precision | Top-1 Accuracy | Accuracy Loss |
-|-----------|----------------|---------------|
+| Precision | Accuracy | Loss |
+|-----------|----------|------|
 | FP32 | 71.8% | - |
 | INT16 | 71.7% | **0.1%** |
 | INT8 | 71.2% | **0.6%** |
@@ -187,27 +187,24 @@ Our implementation introduces 12 custom RISC-V instructions:
 
 | Instruction | Opcode | Function | Description |
 |------------|--------|----------|-------------|
-| `conv2d` | 0x7B | 2D Convolution | Hardware-accelerated convolution |
-| `maxpool` | 0x7C | Max Pooling | 2×2 max pooling operation |
-| `relu` | 0x7D | ReLU Activation | Rectified linear unit |
-| `matmul` | 0x7E | Matrix Multiply | Efficient matrix multiplication |
+| `conv2d` | 0x7B | Conv2D | Hardware-accelerated 2D convolution |
+| `maxpool` | 0x7C | MaxPool | 2×2 max pooling operation |
+| `relu` | 0x7D | ReLU | Rectified linear unit activation |
+| `matmul` | 0x7E | MatMul | Efficient matrix multiplication |
 | `softmax` | 0x7F | Softmax | Softmax activation function |
 
 ### 📁 Project Structure
 
 ```
 fpga-riscv-nn-extensions/
-├── 📁 vivado_project/          # FPGA implementation
-│   ├── 📁 hdl/                  # Hardware description files
-│   ├── 📁 constraints/          # Timing constraints
-│   └── 📁 tcl/                  # Build scripts
-├── 📁 isa_engine/               # ISA generation tools
-├── 📁 compiler_integration/     # LLVM backend
-├── 📁 validation/               # Testing framework
-├── 📁 benchmarks/               # Performance benchmarks
-├── 📁 figures/                  # Paper figures
-├── 📁 arxiv_submission/         # Academic paper
-└── 📄 main.py                   # Main application
+├── vivado_project/          # FPGA implementation
+├── isa_engine/              # ISA generation tools  
+├── compiler_integration/    # LLVM backend
+├── validation/              # Testing framework
+├── benchmarks/              # Performance benchmarks
+├── figures/                 # Paper figures
+├── arxiv_submission/        # Academic paper
+└── main.py                  # Main application
 ```
 
 ---
