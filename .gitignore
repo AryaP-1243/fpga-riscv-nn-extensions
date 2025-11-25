@@ -1,0 +1,108 @@
+# macOS system files
+.DS_Store
+*/.DS_Store
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Local state and temporary files
+.local/
+*.tmp
+*.temp
+*.log
+
+# ArXiv submission files (keep originals, ignore duplicates)
+arxiv_submission 2/
+arxiv_submission_final/
+arxiv_final_submission/
+arxiv_submission_CORRECTED_FINAL.zip
+arxiv_submission_final.zip
+
+# Overleaf submission files
+overleaf_submission/
+overleaf_submission.zip
+overleaf_submission_updated.zip
+
+# Files for friend/college (exclude from public repo)
+SEND_TO_FRIEND_COMPLETE_PACKAGE/
+📝_SEND_THIS_TO_FRIEND.md
+SHARE_WITH_FRIENDS.md
+COLLEGE_SYSTEM_DEPLOYMENT.md
+FILES_TO_TRANSFER.txt
+
+# Hardware validation packages (exclude from public repo)
+HARDWARE_VALIDATION_PACKAGE_FIXED.zip
+HARDWARE_VALIDATION_ZCU104.zip
+pynq_hardware_deployment.zip
+pynq_hardware_deployment/
+
+# Personal notes and checklists (exclude from public repo)
+*CHECKLIST.md
+*PLAN.md
+*SUMMARY.md
+*GUIDE.md
+*DEPLOYMENT*.md
+*ARXIV*.md
+*SUBMISSION*.md
+*VALIDATION*.md
+*QUICK*.md
+*COMPLETE*.md
+*FINAL*.md
+*MEETING*.md
+*PROJECT_*.md
+*READY*.md
+*FIXED*.md
+*SIZING*.md
+
+# Duplicate and working files
+*.backup
+*.bak
+*copy*
+*working*
+*demo*
+
+# Generated PDF files (keep figures, exclude papers)
+*.pdf
+!figures/*.pdf
+
+# Temporary scripts and test files
+test_*.py
+*_test.py
+deploy_*.sh
+quick_*.sh
+
+# Results and data files
+*_results/
+*.json
+*.csv
+!references.bib
+
+# Arya personal folder
+arya/
+
+# Large zip files and packages
+*.zip
+!arxiv_submission.zip
+
+# Streamlit config (keep if needed)
+#.streamlit/
+
+# Replit agent state
+.local/state/replit/agent/

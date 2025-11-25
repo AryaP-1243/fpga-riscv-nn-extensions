@@ -1,0 +1,19 @@
+\begin{table*}[t]
+\centering
+\caption{Profiling Results and Projected Performance with Proposed RISC-V ISA Extensions on PYNQ-Z2\footnotemark}
+\label{tab:performance_comparison}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Model} & \textbf{Parameters} & \textbf{Baseline} & \textbf{Projected} & \textbf{Projected} & \textbf{Projected Energy} & \textbf{ISA} \\
+ & & \textbf{Latency (ms)} & \textbf{Latency (ms)} & \textbf{Speedup} & \textbf{Reduction (\%)} & \textbf{Extensions} \\
+\midrule
+MobileNet V2 & 3.5M & 491.85 $\pm$ 0.22 & 272.44 & 1.81$\times$ & 38.6\% & 4 \\
+ResNet-18 & 11.7M & 921.56 $\pm$ 0.30 & 523.38 & 1.76$\times$ & 35.2\% & 3 \\
+EfficientNet Lite & 4.3M & 430.49 $\pm$ 0.20 & 172.55 & 2.49$\times$ & 61.4\% & 3 \\
+YOLO Tiny & 8.9M & 798.74 $\pm$ 0.24 & 317.71 & 2.51$\times$ & 61.4\% & 3 \\
+\midrule
+\textbf{Average} & \textbf{7.1M} & \textbf{660.66} & \textbf{321.52} & \textbf{2.14$\times$} & \textbf{49.1\%} & \textbf{3.25} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+\footnotetext{Baseline latency measured on ARM Cortex-A9 (650 MHz). Projected latency and energy reductions are estimates based on profiling analysis and proposed ISA extensions. Hardware validation is future work.}

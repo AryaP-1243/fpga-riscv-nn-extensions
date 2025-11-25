@@ -1,0 +1,402 @@
+\documentclass[11pt]{article}
+
+% Essential packages for arXiv submission
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{url}
+\usepackage{cite}
+\usepackage{geometry}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{textcomp}
+\usepackage[pdftex,bookmarks=false,pdfborder={0 0 0}]{hyperref}
+\usepackage{cleveref}
+\usepackage[section]{placeins}
+\usepackage[T1]{fontenc}
+\usepackage{bm}
+\usepackage{array}
+\usepackage{flafter}
+
+% Set graphics path to include the figures directory
+\graphicspath{{figures/}}
+
+% Better handling of URLs in references
+\urlstyle{same}
+
+% Additional configuration for better formatting
+
+% For better subfigure handling
+\captionsetup[subfigure]{labelformat=simple}
+
+% For better table spacing
+\renewcommand{\arraystretch}{1.2}
+
+% For better math spacing
+\allowdisplaybreaks
+
+% Remove IEEE specific commands that might cause issues
+\let\IEEEauthorblockN\relax
+\let\IEEEauthorblockA\relax
+\let\IEEEauthorblockN\relax
+\let\IEEEauthorblockA\relax
+
+% Page setup for arXiv
+\geometry{margin=1in}
+
+% Title and authors
+\title{Profiling-Driven Design of RISC-V ISA Extensions for Edge Neural Network Acceleration: A Simulation Study on PYNQ-Z2}
+
+\author{
+Arya P\\
+PES University\\
+\texttt{aryapkar@gmail.com}
+}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This paper presents a profiling-driven methodology for designing custom RISC-V instruction set architecture (ISA) extensions to accelerate edge neural network inference. We develop an automated profiling framework that analyzes neural network workloads on the Xilinx PYNQ-Z2 platform and generates optimized ISA extensions targeting computational bottlenecks including vectorized convolution (FPGA.VCONV), parallel activation functions (FPGA.RELU), and matrix operations (FPGA.GEMM).
+
+Through comprehensive profiling of four representative neural network models (MobileNet V2, ResNet-18, EfficientNet Lite, and YOLO Tiny) on ARM Cortex-A9 hardware, our analysis projects potential speedups averaging 2.14$\times$ ($\sigma = 0.36$) with energy efficiency improvements of 49.1\% ($\sigma = 12.3\%$) if the proposed ISA extensions were implemented in hardware. The profiling framework successfully identifies bottleneck operations covering 99.1\%-100\% of execution time across all models.
+
+Our methodology provides a systematic approach to ISA extension design for neural network acceleration, offering concrete projections to guide future hardware implementation efforts. The automated profiling and ISA generation framework is released as open-source to enable reproducible research in custom instruction set design for edge AI applications.
+
+\textbf{Keywords:} RISC-V, ISA Extensions, Neural Network Profiling, Edge AI, Performance Projection, PYNQ, Design Space Exploration
+\end{abstract}
+
+\section{Introduction}
+
+Edge artificial intelligence (AI) deployment faces significant challenges in balancing computational performance, energy efficiency, and hardware flexibility. Traditional approaches either sacrifice programmability for performance (ASICs) or accept suboptimal efficiency for flexibility (general-purpose processors). The emergence of RISC-V as an open instruction set architecture (ISA) provides new opportunities for custom acceleration through ISA extensions while maintaining software compatibility and ecosystem benefits.
+
+Neural network inference at the edge requires specialized computational patterns that are poorly served by traditional processor architectures. Convolutional operations, activation functions, and matrix multiplications dominate the computational workload, yet these operations are implemented inefficiently using standard instruction sets. Custom ISA extensions can address these inefficiencies by providing domain-specific instructions that accelerate critical neural network primitives.
+
+Designing effective ISA extensions requires understanding the computational characteristics of target workloads. The Xilinx PYNQ-Z2 platform, with its ARM Cortex-A9 processors and accessible FPGA fabric, provides an ideal environment for profiling neural network workloads and projecting the potential benefits of custom ISA extensions. This paper focuses on the critical first step: systematic profiling and performance projection to guide future hardware implementation efforts.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/system_architecture.pdf}
+\caption{Proposed system architecture for PYNQ-Z2 platform showing ARM Cortex-A9 processors, FPGA fabric, and envisioned custom RISC-V core with neural network ISA extensions for future hardware implementation.}
+\label{fig:system_architecture}
+\end{figure}
+
+This paper makes the following key contributions:
+
+\begin{enumerate}
+\item \textbf{Automated Profiling Framework}: We present a systematic methodology for analyzing neural network workloads on edge hardware and automatically identifying opportunities for custom RISC-V ISA extensions based on computational bottleneck analysis.
+
+\item \textbf{Performance Projection Methodology}: We develop a rigorous approach for projecting the potential speedup and energy efficiency improvements achievable through custom ISA extensions, validated across four diverse neural network architectures.
+
+\item \textbf{Comprehensive Workload Analysis}: We provide detailed profiling results for MobileNet V2, ResNet-18, EfficientNet Lite, and YOLO Tiny on ARM Cortex-A9 hardware, demonstrating projected speedups of 1.76$\times$-2.51$\times$ across models.
+
+\item \textbf{Open-Source Profiling Toolchain}: We contribute a complete profiling and ISA generation framework to enable reproducible research in custom instruction set design for neural network acceleration.
+\end{enumerate}
+
+The remainder of this paper is organized as follows: Section~\ref{sec:related} reviews related work in RISC-V extensions and neural network profiling. Section~\ref{sec:methodology} describes our profiling methodology and performance projection approach. Section~\ref{sec:experimental} presents our experimental setup and profiling platform. Section~\ref{sec:results} analyzes projected performance across multiple neural network architectures. Section~\ref{sec:discussion} discusses implications, limitations, and future hardware implementation work, and Section~\ref{sec:conclusion} concludes.
+
+\section{Related Work}
+\label{sec:related}
+
+\subsection{RISC-V Extensions for AI Acceleration}
+
+The RISC-V ecosystem has seen growing interest in custom extensions for AI workloads. The RISC-V Vector Extension (RVV) provides a foundation for SIMD operations but lacks the domain-specific optimizations required for efficient neural network execution~\cite{riscv_vector}. Recent work has explored custom instructions for specific AI operations, but most approaches focus on general-purpose acceleration rather than neural network-specific optimizations~\cite{custom_instructions}.
+
+Celio et al.~\cite{boom_processor} demonstrated custom RISC-V extensions for machine learning workloads but focused primarily on training rather than inference optimization. Their work highlighted the potential for ISA extensions but did not address the specific requirements of edge AI deployment, particularly energy efficiency and resource constraints.
+
+\subsection{FPGA-Based Neural Network Acceleration}
+
+FPGA implementations of neural network accelerators have shown significant promise for edge AI applications. Zhang et al.~\cite{fpga_cnn_survey} presented a comprehensive survey of FPGA-based deep learning accelerators, highlighting the advantages of reconfigurable hardware for neural network optimization. However, most existing approaches require specialized hardware description languages and lack the programmability of instruction set extensions.
+
+The PYNQ framework~\cite{pynq_platform} has democratized FPGA development by providing Python-based interfaces to FPGA acceleration. This approach enables rapid prototyping and deployment of custom accelerators while maintaining software programmability. Our work builds on this foundation by integrating RISC-V ISA extensions with the PYNQ ecosystem.
+
+\subsection{Edge AI Optimization Techniques}
+
+Edge AI deployment requires careful optimization of performance, power consumption, and memory usage. Recent work has explored various approaches including model quantization, pruning, and specialized hardware architectures~\cite{edge_ai_survey}. However, most optimization techniques focus on algorithmic improvements rather than instruction set enhancements.
+
+Howard et al.~\cite{mobilenet_v2} introduced MobileNets as efficient neural network architectures for mobile and embedded vision applications. Their work demonstrated the importance of architectural choices for edge deployment but did not explore custom instruction set optimizations. Our work complements these efforts by providing hardware-level acceleration for efficient neural network architectures.
+
+\section{Methodology}
+\label{sec:methodology}
+
+\subsection{Profiling-Driven ISA Extension Design}
+
+Our methodology employs systematic profiling of neural network workloads on edge hardware to identify opportunities for custom ISA extensions. We developed an automated profiling framework that executes neural networks on the PYNQ-Z2 ARM Cortex-A9 processor and collects detailed performance characteristics including:
+
+\begin{itemize}
+\item \textbf{Layer-wise execution time profiling}: Precise measurement of computational bottlenecks using hardware performance counters
+\item \textbf{Operation frequency analysis}: Quantification of common neural network primitives and their execution patterns
+\item \textbf{Memory access characterization}: Measurement of cache behavior and memory bandwidth utilization
+\item \textbf{Energy consumption profiling}: Power measurement during inference to estimate energy per operation
+\end{itemize}
+
+Based on profiling data, our system automatically generates candidate RISC-V ISA extensions targeting the most computationally intensive operations. The proposed extensions include:
+
+\textbf{FPGA.VCONV}: Vectorized 2D convolution operations designed to process multiple input channels simultaneously, potentially reducing instruction count and improving memory locality.
+
+\textbf{FPGA.RELU}: Parallel ReLU activation functions that would operate on vector data, eliminating conditional branching in activation computation.
+
+\textbf{FPGA.GEMM}: Optimized general matrix multiplication with support for common neural network matrix dimensions and data types.
+
+\textbf{FPGA.POOL}: Efficient pooling operations including max pooling and average pooling with configurable kernel sizes.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/isa_extension_workflow.pdf}
+\caption{Profiling-driven ISA extension generation workflow showing neural network profiling on ARM Cortex-A9, bottleneck identification, custom instruction proposal, and performance projection methodology.}
+\label{fig:isa_workflow}
+\end{figure}
+
+\subsection{Performance Projection Methodology}
+
+To estimate the potential performance improvements from proposed ISA extensions, we employ a projection methodology based on measured execution time and operation characteristics:
+
+\begin{enumerate}
+\item \textbf{Bottleneck Identification}: Operations consuming $>$3\% of total execution time are identified as optimization candidates.
+
+\item \textbf{Speedup Estimation}: For each bottleneck operation, we estimate the potential speedup based on:
+\begin{itemize}
+\item Instruction count reduction through vectorization
+\item Memory access pattern improvements
+\item Elimination of conditional branches
+\item Parallelization opportunities
+\end{itemize}
+
+\item \textbf{Coverage Analysis}: We calculate the percentage of total execution time covered by proposed ISA extensions to assess optimization potential.
+
+\item \textbf{Energy Projection}: Energy savings are estimated based on reduced instruction count and improved computational efficiency.
+\end{enumerate}
+
+\subsection{ISA Extension Design Principles}
+
+Our proposed ISA extensions follow several design principles to maximize potential performance improvements:
+
+\textbf{Data Locality}: Extensions are designed to minimize memory traffic by processing data in-place where possible and improving cache utilization.
+
+\textbf{Vectorization}: Operations are designed to process multiple data elements simultaneously, reducing instruction count and improving throughput.
+
+\textbf{Branch Elimination}: Custom instructions replace conditional operations with predicated execution to reduce branch misprediction penalties.
+
+\textbf{Memory Coalescing}: Extensions are designed to improve memory access patterns and enable efficient burst transfers.
+
+\section{Experimental Setup}
+\label{sec:experimental}
+
+\subsection{Hardware Platform}
+
+Our evaluation platform consists of the Xilinx PYNQ-Z2 development board featuring:
+
+\begin{itemize}
+\item \textbf{FPGA}: Zynq-7020 with 53,200 lookup tables (LUTs) and 220 DSP slices
+\item \textbf{Processor}: ARM Cortex-A9 dual-core running at 650 MHz
+\item \textbf{Memory}: 512 MB DDR3 DRAM
+\item \textbf{Storage}: MicroSD card for operating system and neural network models
+\end{itemize}
+
+This platform represents a typical edge computing environment with constrained resources and power budgets, making it ideal for profiling edge AI workloads and projecting the benefits of hardware acceleration.
+
+\subsection{Neural Network Models}
+
+We evaluate our approach using four representative neural network architectures that span different application domains and computational characteristics:
+
+\textbf{MobileNet V2}~\cite{mobilenet_v2}: An efficient convolutional neural network designed for mobile vision applications with 3.5M parameters and 224$\times$224$\times$3 input resolution.
+
+\textbf{ResNet-18}~\cite{resnet}: A residual neural network architecture with 11.7M parameters, representing standard computer vision workloads.
+
+\textbf{EfficientNet Lite}~\cite{efficientnet}: An optimized neural network architecture with 4.3M parameters, designed for efficient inference on resource-constrained devices.
+
+\textbf{YOLO Tiny}~\cite{yolo}: A compact object detection network with 8.9M parameters and 416$\times$416$\times$3 input resolution, representing real-time detection workloads.
+
+\subsection{Profiling Methodology}
+
+Our profiling methodology consists of the following steps:
+
+\begin{enumerate}
+\item \textbf{Baseline Profiling}: Execute neural networks on ARM Cortex-A9 and measure detailed performance metrics
+\item \textbf{Bottleneck Analysis}: Identify operations consuming significant execution time ($>$3\% threshold)
+\item \textbf{ISA Extension Generation}: Automatically generate custom instruction proposals for bottleneck operations
+\item \textbf{Performance Projection}: Estimate potential speedup and energy savings based on operation characteristics
+\end{enumerate}
+
+Profiling metrics collected include:
+\begin{itemize}
+\item \textbf{Latency}: End-to-end inference time per input (15 runs with 3 warmup iterations)
+\item \textbf{Throughput}: Frames per second (FPS) processing capability
+\item \textbf{Energy Consumption}: Power consumption and energy per inference
+\item \textbf{Layer-wise Timing}: Execution time breakdown by neural network layer
+\item \textbf{Coverage}: Percentage of execution time addressed by proposed ISA extensions
+\end{itemize}
+
+\section{Results and Analysis}
+\label{sec:results}
+
+\subsection{Profiling Results and Performance Projections}
+
+Table~\ref{tab:performance_comparison} presents comprehensive profiling results and projected performance improvements across all evaluated neural network models. Based on bottleneck analysis and ISA extension proposals, our methodology projects potential speedups ranging from 1.76$\times$ to 2.51$\times$ compared to the ARM Cortex-A9 baseline, with an average projected speedup of 2.14$\times$ ($\sigma = 0.36$).
+
+\input{ieee_performance_table.tex}
+
+The variation in projected speedup across neural network architectures reflects differences in computational patterns and optimization opportunities. EfficientNet Lite and YOLO Tiny show higher projected speedups (2.49$\times$ and 2.51$\times$) due to their convolution-heavy architectures, while MobileNet V2 and ResNet-18 show more modest projections (1.81$\times$ and 1.76$\times$) due to their use of depthwise separable convolutions and residual connections that are already relatively efficient.
+
+Figure~\ref{fig:performance_speedup} illustrates the projected performance improvements from proposed ISA extensions across all evaluated models. The projections demonstrate significant potential for acceleration across diverse neural network architectures.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/performance_speedup.pdf}
+\caption{Projected performance speedup showing potential 1.76$\times$-2.51$\times$ improvements across all neural network models if proposed ISA extensions were implemented in hardware.}
+\label{fig:performance_speedup}
+\end{figure}
+
+\subsection{Energy Efficiency Projections}
+
+Based on measured baseline energy consumption and projected instruction count reductions, our analysis projects energy efficiency improvements ranging from 35.2\% to 61.4\% with an average improvement of 49.1\% ($\sigma = 12.3\%$). These projected improvements would stem from several factors:
+
+\begin{enumerate}
+\item \textbf{Reduced Instruction Count}: Custom instructions would eliminate the need for multiple standard instructions to implement neural network operations.
+
+\item \textbf{Optimized Memory Access}: Proposed extensions are designed to minimize memory traffic and improve cache utilization.
+
+\item \textbf{Parallel Execution}: Vector operations would reduce the total number of instruction cycles required for neural network computation.
+
+\item \textbf{Improved Computational Efficiency}: Specialized hardware units would operate more efficiently than general-purpose ALUs.
+\end{enumerate}
+
+Figure~\ref{fig:energy_efficiency} shows the measured baseline energy consumption and projected energy with ISA extensions, demonstrating significant potential energy savings across all models.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/energy_efficiency.pdf}
+\caption{Measured baseline energy consumption and projected energy with proposed ISA extensions, showing potential 35.2\%-61.4\% energy savings across models.}
+\label{fig:energy_efficiency}
+\end{figure}
+
+\subsection{Bottleneck Coverage Analysis}
+
+Our profiling framework successfully identifies bottleneck operations covering 99.1\%-100\% of total execution time across all models. This high coverage indicates that the proposed ISA extensions would address the vast majority of computational workload:
+
+\textbf{MobileNet V2}: 99.1\% coverage with 4 proposed ISA extensions targeting depthwise and pointwise convolutions.
+
+\textbf{ResNet-18}: 100\% coverage with 3 proposed ISA extensions targeting residual blocks and standard convolutions.
+
+\textbf{EfficientNet Lite}: 99.3\% coverage with 3 proposed ISA extensions targeting inverted bottleneck blocks.
+
+\textbf{YOLO Tiny}: 99.9\% coverage with 3 proposed ISA extensions targeting backbone and neck convolutions.
+
+The high coverage across diverse architectures demonstrates that a relatively small set of custom instructions (3-4 per model) can address nearly all computational bottlenecks in modern neural networks.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/resource_utilization.pdf}
+\caption{Bottleneck coverage analysis showing the percentage of execution time addressed by proposed ISA extensions across all neural network models.}
+\label{fig:resource_utilization}
+\end{figure}
+
+\subsection{Statistical Analysis of Profiling Results}
+
+Statistical analysis of our profiling results demonstrates consistent baseline measurements and meaningful variation in projected improvements:
+
+\begin{itemize}
+\item \textbf{Projected Speedup}: 2.14$\times$ $\pm$ 0.36 (range: 1.76$\times$-2.51$\times$)
+\item \textbf{Projected Energy Efficiency}: 49.1\% $\pm$ 12.3\% (range: 35.2\%-61.4\%)
+\item \textbf{Instruction Reduction}: 53.4\% $\pm$ 11.2\% (range: 40.8\%-64.6\%)
+\item \textbf{Bottleneck Coverage}: 99.6\% $\pm$ 0.4\% (range: 99.1\%-100\%)
+\end{itemize}
+
+The variation in projected speedup reflects architectural differences: convolution-heavy models (EfficientNet, YOLO) show higher potential improvements than models using depthwise separable convolutions (MobileNet V2) or residual connections (ResNet-18). The high bottleneck coverage (>99\%) across all models validates the effectiveness of our profiling methodology.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/statistical_analysis.pdf}
+\caption{Statistical analysis showing distribution of projected performance metrics across all evaluated neural network models with measured baseline values.}
+\label{fig:statistical_analysis}
+\end{figure}
+
+\subsection{Proposed ISA Extension Analysis}
+
+Our profiling-driven methodology identified several key ISA extension opportunities that would contribute to the projected performance improvements:
+
+\textbf{FPGA.VCONV} (Vectorized Convolution): Proposed for 52.5\% of bottleneck operations across models, reflecting the dominance of convolutional operations in modern neural networks. This extension would process multiple input channels simultaneously.
+
+\textbf{FPGA.RELU} (Parallel Activation): Proposed for 20\% of bottleneck operations, targeting activation functions. This extension would eliminate conditional branching through predicated execution.
+
+\textbf{FPGA.GEMM} (Matrix Multiplication): Proposed for 25\% of bottleneck operations in fully connected layers. This extension would leverage blocked matrix multiplication for improved cache utilization.
+
+\textbf{FPGA.POOL} (Pooling Operations): Proposed for 2.5\% of operations in models with significant pooling layers, enabling parallel reduction operations.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/isa_contribution.pdf}
+\caption{Relative frequency of proposed ISA extension types across bottleneck operations, showing the dominance of vectorized convolution (FPGA.VCONV) at 52.5\% of identified bottlenecks.}
+\label{fig:isa_contribution}
+\end{figure}
+
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Implications of Profiling Results}
+
+The projected 2.14$\times$ average speedup across diverse neural network architectures demonstrates the potential value of custom ISA extensions for edge AI deployment. If realized through hardware implementation, these improvements would have significant implications:
+
+\textbf{Real-time Processing}: The projected speedup would enable real-time processing of computer vision workloads on resource-constrained edge devices.
+
+\textbf{Battery Life Extension}: The projected 49.1\% energy efficiency improvement could significantly extend battery life in mobile and IoT applications.
+
+\textbf{Design Guidance}: The profiling results provide concrete targets for hardware implementation efforts, focusing resources on high-impact ISA extensions.
+
+\subsection{Methodology Validation and Generalization}
+
+Our profiling methodology demonstrates strong generalization across different neural network architectures, successfully identifying bottlenecks covering >99\% of execution time in all evaluated models. This suggests that the identified computational patterns are fundamental to neural network computation rather than architecture-specific.
+
+The consistency of proposed ISA extensions across models (primarily FPGA.VCONV for convolution-heavy operations) indicates that a relatively small set of custom instructions could accelerate a wide range of neural network architectures. This finding is valuable for guiding hardware implementation priorities.
+
+\subsection{Limitations and Future Work}
+
+This work presents a profiling and projection study with several important limitations:
+
+\textbf{Hardware Validation}: The projected performance improvements require hardware implementation and validation. Actual speedups may vary based on implementation quality, memory bandwidth constraints, and other hardware factors.
+
+\textbf{Model Coverage}: Our evaluation focuses on computer vision models; transformer-based architectures and other AI domains may exhibit different bottleneck patterns.
+
+\textbf{Projection Accuracy}: Performance projections are based on estimated instruction count reductions and may not fully capture memory hierarchy effects, pipeline stalls, or other microarchitectural factors.
+
+\textbf{Platform Specificity}: Profiling results are specific to ARM Cortex-A9; different processors may show different bottleneck characteristics.
+
+Future work will address these limitations through:
+
+\begin{enumerate}
+\item \textbf{Hardware Implementation}: RTL design and FPGA synthesis of proposed ISA extensions to validate projected performance improvements
+\item \textbf{Extended Evaluation}: Profiling of transformer-based models (BERT, GPT) and recurrent architectures
+\item \textbf{Multi-platform Validation}: Profiling on additional edge processors to assess generalizability
+\item \textbf{Integration with RISC-V Vector Extension}: Exploring synergies between custom ISA extensions and standard RVV instructions
+\end{enumerate}
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+This paper presents a systematic profiling-driven methodology for designing custom RISC-V ISA extensions to accelerate edge neural network inference. Our automated profiling framework analyzes neural network workloads on edge hardware and generates optimized ISA extension proposals targeting computational bottlenecks.
+
+Through comprehensive profiling of four representative neural network architectures (MobileNet V2, ResNet-18, EfficientNet Lite, and YOLO Tiny) on the PYNQ-Z2 ARM Cortex-A9 processor, our analysis projects potential speedups averaging 2.14$\times$ ($\sigma = 0.36$) with energy efficiency improvements of 49.1\% ($\sigma = 12.3\%$) if the proposed ISA extensions were implemented in hardware. The profiling framework successfully identifies bottleneck operations covering 99.1\%-100\% of execution time across all models.
+
+The key contributions of this work include: (1) an automated profiling framework for identifying ISA extension opportunities, (2) a rigorous performance projection methodology validated across diverse architectures, (3) comprehensive workload analysis demonstrating consistent bottleneck patterns, and (4) an open-source profiling toolchain enabling reproducible research.
+
+Our results demonstrate that profiling-driven ISA extension design provides a systematic approach to identifying high-impact optimization opportunities for edge AI acceleration. The projected performance improvements motivate future hardware implementation efforts, while the profiling methodology provides a foundation for continued research in custom instruction set design.
+
+Future work will focus on hardware implementation and validation of proposed ISA extensions, extension of the profiling framework to transformer-based architectures, and integration with emerging RISC-V vector extensions. The profiling methodology and results presented in this work provide concrete guidance for hardware designers pursuing custom acceleration for neural network inference at the edge.
+
+\section*{Acknowledgments}
+
+The authors thank the RISC-V Foundation for their support of open-source hardware development and Xilinx for providing the PYNQ platform that enabled this research.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

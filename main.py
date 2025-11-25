@@ -18,7 +18,11 @@ sys.path.append(str(Path(__file__).parent))
 
 from profiler.torch_profiler import ModelProfiler
 from isa_engine.isa_generator import ISAGenerator
+from isa_engine.advanced_isa_generator import advanced_generator
 from utils.analysis_tools import PerformanceAnalyzer
+from benchmarks.industry_benchmarks import benchmark_suite
+from reports.professional_reports import report_generator
+from hardware_integration.riscv_simulator import hardware_simulator
 from rl_optimizer.isa_rl_agent import ISAOptimizer, run_rl_optimization
 from compiler_integration.llvm_isa_backend import integrate_with_llvm
 from workload_analyzer.multi_model_analyzer import WorkloadProfiler, run_multi_model_analysis
@@ -28,6 +32,7 @@ from models.preloaded_models import model_manager, ModelCategory
 from models.model_search import search_engine
 from models.model_demo import model_demonstrator
 from models.model_catalog import catalog_viewer
+from professional_suite import render_professional_suite
 
 # Configure Streamlit page
 st.set_page_config(
@@ -394,12 +399,13 @@ def main():
         profile_data, isa_extensions = load_sample_data()
     
     # Create tabs with advanced features including model catalog
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs([
         "📚 Model Catalog",
         "📊 Profiling Results", 
         "🔧 ISA Extensions", 
         "💻 Emulator", 
         "📈 Performance Analysis",
+        "🏆 Professional Suite",
         "🤖 RL Optimization",
         "🏗️ LLVM Integration",
         "🔍 Multi-Model Analysis",
@@ -736,6 +742,9 @@ relu.v x12, x13          # Custom ReLU instruction
             st.info("Performance analysis will be available after ISA extensions are generated.")
     
     with tab6:
+        render_professional_suite(profile_data, isa_extensions)
+    
+    with tab7:
         st.header("🤖 RL-Based ISA Optimization")
         st.markdown("Use reinforcement learning to automatically discover optimal instruction combinations")
         
@@ -794,7 +803,7 @@ relu.v x12, x13          # Custom ReLU instruction
             results = st.session_state.rl_results
             st.write(f"Best configuration: {', '.join(results['best_config'])}")
     
-    with tab7:
+    with tab8:
         st.header("🏗️ LLVM Compiler Integration")
         st.markdown("Generate LLVM backend code for custom RISC-V instructions")
         
@@ -859,7 +868,7 @@ qemu-riscv64 -L /usr/riscv64-linux-gnu neural_network""", language='bash')
         else:
             st.info("Generate ISA extensions first to enable LLVM integration.")
     
-    with tab8:
+    with tab9:
         st.header("🔍 Multi-Model Workload Analysis")
         st.markdown("Compare optimization potential across different neural network types")
         
@@ -932,7 +941,7 @@ qemu-riscv64 -L /usr/riscv64-linux-gnu neural_network""", language='bash')
             results = st.session_state.multi_model_results
             st.write(f"Models analyzed: {len([r for r in results.values() if 'error' not in r])}")
     
-    with tab9:
+    with tab10:
         st.header("🛡️ Security-Aware ISA Design")
         st.markdown("Analyze security risks and generate hardened instruction variants")
         
