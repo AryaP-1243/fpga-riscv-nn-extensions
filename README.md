@@ -71,35 +71,38 @@ This project introduces a novel approach to accelerating neural network inferenc
 <div align="center">
 
 ```mermaid
-graph LR
-    A[NN Model] --> B[Profiler]
-    B --> C[ISA Gen]
-    C --> D[Custom Instr]
-    D --> E[RISC-V Core]
-    E --> F[FPGA]
-    F --> G[Acceleration]
-    
-    H[Compiler] --> I[LLVM]
-    I --> J[Binary]
+%%{init: {'flowchart': {'nodeSpacing': 8, 'rankSpacing': 12, 'curve': 'basis', 'padding': 2}, 'themeVariables': {'fontSize': '11px'}}}%%
+graph TB
+    A[Neural Network Model]
+    A --> B[Performance Profiler]
+    B --> C[ISA Generator Engine]
+    C --> D[Custom ISA Instructions]
+    D --> E[RISC-V Core Processor]
+    E --> F[FPGA Implementation]
+    F --> G[Hardware Accelerator]
+
+    B --> H[Compiler Toolchain]
+    H --> I[LLVM Backend]
+    I --> J[Binary Images]
     J --> E
-    
-    K[Validation] --> L[Metrics]
-    L --> M[Analysis]
-    M --> N[Feedback]
-    N --> C
+
+    A --> K[Validation Suite]
+    K --> L[Performance Metrics]
+    L --> M[Statistical Analysis]
+    M --> C
 ```
 
 </div>
 
 ### System Components
 
-| C | Tech |
-|---|------|
-| Core | Verilog |
-| Accel | FPGA |
-| Mem | Xilinx |
-| Comp | LLVM |
-| Test | Python |
+| Component | Description | Technology |
+|-----------|-------------|------------|
+| **RISC-V Core** | 32-bit pipeline with custom neural network extensions | Verilog HDL |
+| **Neural Accelerator** | Dedicated matrix multiplication and activation engines | FPGA Fabric |
+| **Memory Interface** | AXI4 memory subsystem with DMA controller | Xilinx IP |
+| **Compiler Backend** | LLVM passes and intrinsics for ISA support | C++ / LLVM |
+| **Validation Suite** | Regression tests and performance profiling scripts | Python / PyTorch |
 
 ---
 
@@ -154,32 +157,32 @@ cd deployment
 
 ### 🏆 Benchmark Results
 
-| Model | ARM | Ours | Speedup |
-|-------|-----|------|---------|
-| MN-V2 | 45.2 | 21.1 | **2.14×** |
-| RN-50 | 89.7 | 42.3 | **2.12×** |
-| EN-B0 | 28.4 | 13.5 | **2.10×** |
+| Model | Baseline (ARM Cortex-A9) | Proposed Implementation | Speedup | Energy Reduction |
+|-------|------------------------|-----------------------|---------|-----------------|
+| MobileNet-V2 | 45.2 ms | 21.1 ms | **2.14×** | **49.1%** |
+| ResNet-50 | 89.7 ms | 42.3 ms | **2.12×** | **48.7%** |
+| EfficientNet-B0 | 28.4 ms | 13.5 ms | **2.10×** | **47.9%** |
 
-Energy reduction: ~49% across all models
+Energy reduction averages approximately 49% across all models
 
 ### 📈 Resource Utilization
 
-| R | Usage |
-|---|-------|
-| L | 0.43% |
-| B | 11.4% |
-| D | 8.7% |
-| P | 1.2W |
+| Resource | Used | Available | Utilization |
+|----------|------|-----------|-------------|
+| Look-Up Tables (LUTs) | 1,178 | 274,080 | 0.43% |
+| Block RAM (BRAM) | 104 | 912 | 11.4% |
+| Digital Signal Processing (DSP) | 219 | 2,520 | 8.7% |
+| Power Consumption | 1.2 W | - | - |
 
-### 🎯 Accuracy
+### 🎯 Accuracy Validation
 
-| P | Accuracy |
-|---|----------|
-| 32 | 71.8% |
-| 16 | 71.7% |
-| 8 | 71.2% |
+| Precision | Top-1 Accuracy | Loss vs. FP32 |
+|-----------|---------------|---------------|
+| Single Precision (FP32) | 71.8% | - |
+| Half Precision (INT16) | 71.7% | **0.1%** |
+| 8-bit Integer (INT8) | 71.2% | **0.6%** |
 
-INT16 accuracy loss: <0.1%
+INT16 accuracy degradation stays below 0.1%
 
 ---
 
@@ -189,13 +192,20 @@ INT16 accuracy loss: <0.1%
 
 Our implementation introduces 12 custom RISC-V instructions:
 
-| I | O | F |
-|---|---|---|
-| c | 7B | Conv |
-| m | 7C | Pool |
-| r | 7D | ReLU |
-| M | 7E | Mat |
-| s | 7F | Soft |
+| Instruction | Opcode | Function | Description |
+|-------------|--------|----------|-------------|
+| `conv2d` | 0x7B | Conv2D | Hardware-accelerated 2D convolution |
+| `maxpool` | 0x7C | MaxPool | 2×2 max pooling operation |
+| `relu` | 0x7D | ReLU | Rectified linear activation |
+| `matmul` | 0x7E | MatMul | Optimized matrix multiplication |
+| `softmax` | 0x7F | Softmax | Softmax activation function |
+| `tanh` | 0x80 | Tanh | Hyperbolic tangent activation |
+| `sigmoid` | 0x81 | Sigmoid | Sigmoid activation function |
+| `batchnorm` | 0x82 | BatchNorm | Batch normalization operation |
+| `dropout` | 0x83 | Dropout | Random dropout operation |
+| `flatten` | 0x84 | Flatten | Flatten operation for 1D data |
+| `concat` | 0x85 | Concat | Concatenation operation for 1D data |
+| `transpose` | 0x86 | Transpose | Transpose operation for 2D data |
 
 ### 📁 Project Structure
 
