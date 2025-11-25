@@ -71,21 +71,21 @@ This project introduces a novel approach to accelerating neural network inferenc
 <div align="center">
 
 ```mermaid
-graph TB
-    A[Neural Network Model] --> B[Profile Analyzer]
-    B --> C[ISA Generator]
-    C --> D[Custom Instructions]
+graph LR
+    A[NN Model] --> B[Profiler]
+    B --> C[ISA Gen]
+    C --> D[Custom Instr]
     D --> E[RISC-V Core]
-    E --> F[FPGA Implementation]
-    F --> G[Hardware Acceleration]
+    E --> F[FPGA]
+    F --> G[Acceleration]
     
-    H[Compiler Toolchain] --> I[LLVM Backend]
-    I --> J[Binary Generation]
+    H[Compiler] --> I[LLVM]
+    I --> J[Binary]
     J --> E
     
-    K[Validation Suite] --> L[Performance Metrics]
-    L --> M[Statistical Analysis]
-    M --> N[Optimization Feedback]
+    K[Validation] --> L[Metrics]
+    L --> M[Analysis]
+    M --> N[Feedback]
     N --> C
 ```
 
@@ -93,13 +93,13 @@ graph TB
 
 ### System Components
 
-| Component | Description | Tech |
-|-----------|-------------|------|
-| **RISC-V Core** | 32-bit pipeline + extensions | Verilog |
-| **Neural Accelerator** | Hardware matrix units | FPGA |
-| **Memory Interface** | AXI4 memory management | Xilinx |
-| **Compiler Backend** | LLVM compilation | C++/LLVM |
-| **Validation Suite** | Testing framework | Python |
+| Component | Tech |
+|-----------|------|
+| RISC-V Core | Verilog |
+| Neural Accelerator | FPGA |
+| Memory Interface | Xilinx |
+| Compiler Backend | LLVM |
+| Validation Suite | Python |
 
 ---
 
@@ -154,28 +154,32 @@ cd deployment
 
 ### 🏆 Benchmark Results
 
-| Model | ARM | Ours | Speedup | Energy ↓ |
-|-------|-----|------|---------|----------|
-| MobileNet-V2 | 45.2 | 21.1 | **2.14×** | **49.1%** |
-| ResNet-50 | 89.7 | 42.3 | **2.12×** | **48.7%** |
-| EfficientNet-B0 | 28.4 | 13.5 | **2.10×** | **47.9%** |
+| Model | ARM | Ours | Speedup |
+|-------|-----|------|---------|
+| MobileNet-V2 | 45.2 | 21.1 | **2.14×** |
+| ResNet-50 | 89.7 | 42.3 | **2.12×** |
+| EfficientNet-B0 | 28.4 | 13.5 | **2.10×** |
+
+*Energy reduction: ~49% across all models*
 
 ### 📈 Resource Utilization
 
-| Resource | Used | % |
-|----------|------|---|
-| LUTs | 1,178 / 274K | 0.43% |
-| BRAM | 104 / 912 | 11.4% |
-| DSP | 219 / 2.5K | 8.7% |
-| Power | 1.2W | - |
+| Resource | Usage |
+|----------|-------|
+| LUTs | 0.43% |
+| BRAM | 11.4% |
+| DSP | 8.7% |
+| Power | 1.2W |
 
-### 🎯 Accuracy Validation
+### 🎯 Accuracy
 
-| Precision | Accuracy | Loss |
-|-----------|----------|------|
-| FP32 | 71.8% | - |
-| INT16 | 71.7% | **0.1%** |
-| INT8 | 71.2% | **0.6%** |
+| Precision | Accuracy |
+|-----------|----------|
+| FP32 | 71.8% |
+| INT16 | 71.7% |
+| INT8 | 71.2% |
+
+*INT16 accuracy loss: <0.1%*
 
 ---
 
@@ -187,11 +191,11 @@ Our implementation introduces 12 custom RISC-V instructions:
 
 | Instr | Opcode | Function |
 |-------|--------|----------|
-| `conv2d` | 0x7B | 2D Convolution |
-| `maxpool` | 0x7C | Max Pooling |
-| `relu` | 0x7D | ReLU Activation |
-| `matmul` | 0x7E | Matrix Multiply |
-| `softmax` | 0x7F | Softmax |
+| conv2d | 0x7B | Convolution |
+| maxpool | 0x7C | Pooling |
+| relu | 0x7D | ReLU |
+| matmul | 0x7E | Matrix |
+| softmax | 0x7F | Softmax |
 
 ### 📁 Project Structure
 
